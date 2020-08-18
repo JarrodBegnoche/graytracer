@@ -80,6 +80,7 @@ func TestMatrixGet(t *testing.T) {
 		value float64
 	}{
 		{Matrix{2, []float64{3, 5, 1, 2}}, 1, 1, 2},
+		{Matrix{2, []float64{3, 5, 1, 2}}, 1, 0, 1},
 		{Matrix{3, []float64{3, 5, 0, 1, -2, -7, 0, 1, 1}}, 0, 0, 3},
 	}
 	for _, table := range tables {
@@ -99,12 +100,31 @@ func TestMatrixSet(t *testing.T) {
 		pos uint8
 	}{
 		{Matrix{2, []float64{3, 5, 1, 2}}, 1, 1, 2, 3},
+		{Matrix{2, []float64{3, 5, 1, 2}}, 1, 0, 2, 2},
 		{Matrix{3, []float64{3, 5, 0, 1, -2, -7, 0, 1, 1}}, 0, 0, 3, 0},
 	}
 	for _, table := range tables {
 		table.m.Set(table.x, table.y, table.value)
 		if  table.m.Values[table.pos] != table.value {
 			t.Errorf("Got %v, expected %v", table.m.Values[table.pos], table.value)
+		}
+	}
+}
+
+func TestMatrixMultiply(t *testing.T) {
+	tables := []struct {
+		m1 Matrix
+		m2 Matrix
+		product Matrix
+	}{
+		{Matrix{4, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2}},
+		 Matrix{4, []float64{-2, 1, 2, 3, 3, 2, 1, -1, 4, 3, 6, 5, 1, 2, 7, 8}},
+		 Matrix{4, []float64{20, 22, 50, 48, 44, 54, 114, 108, 40, 58, 110, 102, 16, 26, 46, 42}}},
+	}
+	for _, table := range tables {
+		product := table.m1.Multiply(table.m2)
+		if !product.Equals(table.product) {
+			t.Errorf("Expected %v, got %v", table.product, product)
 		}
 	}
 }

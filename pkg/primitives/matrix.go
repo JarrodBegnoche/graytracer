@@ -49,11 +49,28 @@ func (m Matrix) Equals(m2 Matrix) bool {
 }
 
 // Get Return the value at a given position in the matrix
-func (m Matrix) Get(x, y uint8) (float64, error) {
-	return m.Values[(y * m.Size) + x], nil
+func (m Matrix) Get(row, column uint8) (float64, error) {
+	return m.Values[(row * m.Size) + column], nil
 }
 
 // Set Set the value at a give position in the matrix
-func (m Matrix) Set(x, y uint8, value float64) {
-	m.Values[(y * m.Size) + x] = value
+func (m Matrix) Set(row, column uint8, value float64) {
+	m.Values[(row * m.Size) + column] = value
+}
+
+// Multiply Matrix multiplication function
+func (m Matrix) Multiply(o Matrix) Matrix {
+	matrix := MakeEmptyMatrix(m.Size)
+	for row := uint8(0); row < m.Size; row++ {
+		for column := uint8(0); column < m.Size; column++ {
+			sum := float64(0)
+			for val := uint8(0); val < m.Size; val++ {
+				a, _ := m.Get(row, val)
+				b, _ := o.Get(val, column)
+				sum += a * b
+			}
+			matrix.Set(row, column, sum)
+		}
+	}
+	return matrix
 }
