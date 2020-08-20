@@ -56,8 +56,8 @@ func TestMakeMatrix(t *testing.T) {
 
 func TestMatrixEquals(t *testing.T) {
 	tables := []struct {
-		m1 Matrix
-		m2 Matrix
+		matrix1 Matrix
+		matrix2 Matrix
 		equals bool
 	}{
 		{Matrix{2, []float64{3, 2, 1, 0}}, Matrix{3, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9}}, false},
@@ -65,18 +65,18 @@ func TestMatrixEquals(t *testing.T) {
 		{Matrix{2, []float64{1, 0, 0, 1}}, Matrix{2, []float64{1, 0, 0, 1}}, true},
 	}
 	for _, table := range tables {
-		result := table.m1.Equals(table.m2)
+		result := table.matrix1.Equals(table.matrix2)
 		if result != table.equals {
-			t.Errorf("Matrix %v and %v returned %v for Equals", table.m1, table.m2, result)
+			t.Errorf("Matrix %v and %v returned %v for Equals", table.matrix1, table.matrix2, result)
 		}
 	}
 }
 
 func TestMatrixGet(t *testing.T) {
 	tables := []struct {
-		m Matrix
-		x uint8
-		y uint8
+		matrix Matrix
+		row uint8
+		column uint8
 		value float64
 	}{
 		{Matrix{2, []float64{3, 5, 1, 2}}, 1, 1, 2},
@@ -84,7 +84,7 @@ func TestMatrixGet(t *testing.T) {
 		{Matrix{3, []float64{3, 5, 0, 1, -2, -7, 0, 1, 1}}, 0, 0, 3},
 	}
 	for _, table := range tables {
-		value, _ := table.m.Get(table.x, table.y)
+		value := table.matrix.Get(table.row, table.column)
 		if value != table.value {
 			t.Errorf("Got %v, expected %v", value, table.value)
 		}
@@ -93,9 +93,9 @@ func TestMatrixGet(t *testing.T) {
 
 func TestMatrixSet(t *testing.T) {
 	tables := []struct {
-		m Matrix
-		x uint8
-		y uint8
+		matrix Matrix
+		row uint8
+		column uint8
 		value float64
 		pos uint8
 	}{
@@ -104,17 +104,17 @@ func TestMatrixSet(t *testing.T) {
 		{Matrix{3, []float64{3, 5, 0, 1, -2, -7, 0, 1, 1}}, 0, 0, 3, 0},
 	}
 	for _, table := range tables {
-		table.m.Set(table.x, table.y, table.value)
-		if  table.m.Values[table.pos] != table.value {
-			t.Errorf("Got %v, expected %v", table.m.Values[table.pos], table.value)
+		table.matrix.Set(table.row, table.column, table.value)
+		if  table.matrix.Values[table.pos] != table.value {
+			t.Errorf("Got %v, expected %v", table.matrix.Values[table.pos], table.value)
 		}
 	}
 }
 
 func TestMatrixMultiply(t *testing.T) {
 	tables := []struct {
-		m1 Matrix
-		m2 Matrix
+		matrix1 Matrix
+		matrix2 Matrix
 		product Matrix
 	}{
 		{Matrix{4, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2}},
@@ -122,9 +122,44 @@ func TestMatrixMultiply(t *testing.T) {
 		 Matrix{4, []float64{20, 22, 50, 48, 44, 54, 114, 108, 40, 58, 110, 102, 16, 26, 46, 42}}},
 	}
 	for _, table := range tables {
-		product := table.m1.Multiply(table.m2)
+		product := table.matrix1.Multiply(table.matrix2)
 		if !product.Equals(table.product) {
 			t.Errorf("Expected %v, got %v", table.product, product)
+		}
+	}
+}
+
+func TestMatrixMultiplyPV(t *testing.T) {
+	tables := []struct {
+		matrix Matrix
+		pv PV
+		product PV
+	}{
+		{Matrix{4, []float64{1,2,3,4,2,4,4,2,8,6,4,1,0,0,0,1}},PV{1,2,3,1},PV{18,24,33,1}},
+	}
+	for _, table := range tables {
+		product := table.matrix.MultiplyPV(table.pv)
+		if product != table.product {
+			t.Errorf("Expect %v, got %v", table.product, product)
+		}
+	}
+}
+
+func TestMatrixTranspose(t *testing.T) {
+	tables := []struct {
+		matrix Matrix
+		transpose Matrix
+	}{
+		{Matrix{4, []float64{0,9,3,0,9,8,0,8,1,8,5,3,0,0,5,8}},
+		 Matrix{4, []float64{0,9,1,0,9,8,8,0,3,0,5,5,0,8,3,8}}},
+		 
+		{Matrix{4, []float64{1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}},
+		 Matrix{4, []float64{1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}}},
+	}
+	for _, table := range tables {
+		transpose := table.matrix.Transpose()
+		if !transpose.Equals(table.transpose) {
+			t.Errorf("Expected %v, got %v", table.transpose, transpose)
 		}
 	}
 }
