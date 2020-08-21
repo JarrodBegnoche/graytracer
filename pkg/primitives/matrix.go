@@ -4,91 +4,65 @@ import (
 	"math"
 )
 
-// Matrix Represents a square matrix, usually 4x4
-type Matrix struct {
-	Size uint8
-	Values []float64
-}
+// Matrix2 A 2x2 matrix
+type Matrix2 [2][2]float64
 
-// MakeEmptyMatrix Create a matrix of a specific size
-func MakeEmptyMatrix(size uint8) Matrix {
-	matrix := Matrix{Size: size, Values:make([]float64, size * size)}
-	return matrix
-}
+// Matrix3 A 3x3 matrix
+type Matrix3 [3][3]float64
 
-// MakeIdentityMatrix Make an identity matrix
-func MakeIdentityMatrix(size uint8) Matrix {
-	matrix := Matrix{Size: size, Values:make([]float64, size * size)}
-	for x := uint8(0); x < size; x++ {
-		matrix.Set(x, x, 1)
-	}
-	return matrix
-}
+// Matrix4 A 4x4 matrix
+type Matrix4 [4][4]float64
 
-// MakeMatrix Create a matrix of a specific size and 
-func MakeMatrix(size uint8, values []float64) Matrix {
-	matrix := Matrix{Size: size, Values:make([]float64, size * size)}
-	for x := uint8(0); x < (size * size); x++ {
-		matrix.Values[x] = values[x]
+// MakeIdentityMatrix4 Make an identity matrix4x4
+func MakeIdentityMatrix4() Matrix4 {
+	matrix := Matrix4{}
+	for x := uint8(0); x < 4; x++ {
+		matrix[x][x] = 1
 	}
 	return matrix
 }
 
 // Equals Compares two matrices with an amount for approximation
-func (m Matrix) Equals(m2 Matrix) bool {
+func (m Matrix4) Equals(o Matrix4) bool {
 	EPSILON := 0.00000001
-	if m.Size != m2.Size {
-		return false
-	}
-	for x := uint8(0); x < (m.Size * m.Size); x++ {
-		if math.Abs(m.Values[x] - m2.Values[x]) > EPSILON {
-			return false
+	for row := uint8(0); row < 4; row++ {
+		for column := uint8(0); column < 4; column++ {
+			if math.Abs(m[row][column] - o[row][column]) > EPSILON {
+				return false
+			}
 		}
 	}
 	return true
 }
 
-// Get Return the value at a given position in the matrix
-func (m Matrix) Get(row, column uint8) float64 {
-	return m.Values[(row * m.Size) + column]
-}
-
-// Set Set the value at a give position in the matrix
-func (m Matrix) Set(row, column uint8, value float64) {
-	m.Values[(row * m.Size) + column] = value
-}
-
-// Multiply Matrix multiplication function
-func (m Matrix) Multiply(o Matrix) Matrix {
-	matrix := MakeEmptyMatrix(m.Size)
-	for row := uint8(0); row < m.Size; row++ {
-		for column := uint8(0); column < m.Size; column++ {
-			sum := float64(0)
-			for val := uint8(0); val < m.Size; val++ {
-				sum += m.Get(row, val) * o.Get(val, column)
-			}
-			matrix.Set(row, column, sum)
+// Multiply4 Matrix multiplication function
+func (m Matrix4) Multiply4(o Matrix4) Matrix4 {
+	matrix := Matrix4{}
+	for row := uint8(0); row < 4; row++ {
+		for column := uint8(0); column < 4; column++ {
+			matrix[row][column] = (m[row][0] * o[0][column]) +
+								  (m[row][1] * o[1][column]) +
+								  (m[row][2] * o[2][column]) +
+								  (m[row][3] * o[3][column])
 		}
 	}
 	return matrix
 }
 
-// MultiplyPV Multiply a matrix by a point/vector
-func (m Matrix) MultiplyPV(pv PV) PV {
-	return PV{X:(m.Get(0, 0) * pv.X) + (m.Get(0, 1) * pv.Y) + (m.Get(0, 2) * pv.Z) + (m.Get(0, 3) * pv.W),
-			  Y:(m.Get(1, 0) * pv.X) + (m.Get(1, 1) * pv.Y) + (m.Get(1, 2) * pv.Z) + (m.Get(1, 3) * pv.W),
-			  Z:(m.Get(2, 0) * pv.X) + (m.Get(2, 1) * pv.Y) + (m.Get(2, 2) * pv.Z) + (m.Get(2, 3) * pv.W),
-			  W:(m.Get(3, 0) * pv.X) + (m.Get(3, 1) * pv.Y) + (m.Get(3, 2) * pv.Z) + (m.Get(3, 3) * pv.W)}
+// Multiply4PV Multiply a matrix by a point/vector
+func (m Matrix4) Multiply4PV(pv PV) PV {
+	return PV{x:(m[0][0] * pv.X()) + (m[0][1] * pv.Y()) + (m[0][2] * pv.Z()) + (m[0][3] * pv.W()),
+			  y:(m[1][0] * pv.X()) + (m[1][1] * pv.Y()) + (m[1][2] * pv.Z()) + (m[1][3] * pv.W()),
+			  z:(m[2][0] * pv.X()) + (m[2][1] * pv.Y()) + (m[2][2] * pv.Z()) + (m[2][3] * pv.W()),
+			  w:(m[3][0] * pv.X()) + (m[3][1] * pv.Y()) + (m[3][2] * pv.Z()) + (m[3][3] * pv.W())}
 }
 
 // Transpose Flip the rows with the columns of a matrix
-func (m Matrix) Transpose() Matrix {
-	matrix := MakeMatrix(m.Size, m.Values)
-	for row := uint8(1); row < m.Size; row++ {
-		for column := uint8(0); column < row; column++ {
-			spot1 := (row * m.Size) + column
-			spot2 := (column * m.Size) + row
-			matrix.Values[spot1], matrix.Values[spot2] = matrix.Values[spot2], matrix.Values[spot1]
+func (m Matrix4) Transpose() Matrix4 {
+	matrix := Matrix4{}
+	for row := uint8(0); row < 4; row++ {
+		for column := uint8(0); column < 4; column++ {
+			matrix[row][column] = m[column][row]
 		}
 	}
 	return matrix

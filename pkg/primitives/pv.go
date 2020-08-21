@@ -5,59 +5,79 @@ import (
 )
 
 
-// PV represents a PV in 3D space
-type PV struct {X, Y, Z, W float64}
+// PV represents 3D coordinates and a w variable for distinction between point and vector
+type PV struct {x, y, z, w float64}
+
+// X Return X coordinate
+func (pv PV) X() float64 {
+	return pv.x
+}
+
+// Y Return Y coordinate
+func (pv PV) Y() float64 {
+	return pv.y
+}
+
+// Z Return Z coordinate
+func (pv PV) Z() float64 {
+	return pv.z
+}
+
+// W Return W value
+func (pv PV) W() float64 {
+	return pv.w
+}
 
 // MakeVector Create a vector PV type
 func MakeVector(x, y, z float64) PV {
-	return PV{x, y, z, 0.0}
+	return PV{x:x, y:y, z:z, w:0.0}
 }
 
 // MakePoint Create a point PV type
 func MakePoint(x, y, z float64) PV {
-	return PV{x, y, z, 1.0}
+	return PV{x:x, y:y, z:z, w:1.0}
 }
 
 // Add adds one PV to another and returns the result
-func (v PV) Add(q PV) PV {
-	return PV{v.X + q.X, v.Y + q.Y, v.Z + q.Z, v.W + q.W}
+func (pv PV) Add(o PV) PV {
+	return PV{pv.x + o.X(), pv.y + o.Y(), pv.z + o.Z(), pv.w + o.W()}
 }
 
 // Subtract subtracts one PV from another and returns the result
-func (v PV) Subtract(q PV) PV {
-	return PV{v.X - q.X, v.Y - q.Y, v.Z - q.Z, v.W - q.W}
+func (pv PV) Subtract(o PV) PV {
+	return PV{pv.x - o.X(), pv.y - o.Y(), pv.z - o.Z(), pv.w - o.W()}
 }
 
-// Negate Negate the PV to return one going in the opposite direction
-func (v PV) Negate() PV {
-	return PV{0 - v.X, 0 - v.Y, 0 - v.Z, v.W}
+// Negate Negate the PV to return its opposite
+func (pv PV) Negate() PV {
+	return PV{0 - pv.x, 0 - pv.y, 0 - pv.z, pv.w}
 }
 
 // Scalar Scale a PV by a given value and return the result as a PV
-func (v PV) Scalar(s float64) PV {
-	return PV{v.X * s, v.Y * s, v.Z * s, v.W * s}
+func (pv PV) Scalar(s float64) PV {
+	return PV{pv.x * s, pv.y * s, pv.z * s, pv.w * s}
 }
 
 // Magnitude Returns the magnitude of the PV
-func (v PV) Magnitude() float64 {
-	return math.Sqrt((v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z) + (v.W * v.W))
+func (pv PV) Magnitude() float64 {
+	return math.Sqrt((pv.x * pv.x) + (pv.y * pv.y) + (pv.z * pv.z) + (pv.w * pv.w))
 }
 
 // Normalize Returns the normalized version of the PV
-func (v PV) Normalize() PV {
-	magnitude := v.Magnitude()
-	return PV{v.X / magnitude, v.Y / magnitude, v.Z / magnitude, v.W / magnitude}
+func (pv PV) Normalize() PV {
+	magnitude := pv.Magnitude()
+	return PV{pv.x / magnitude, pv.y / magnitude, pv.z / magnitude, pv.w / magnitude}
 }
 
 // DotProduct Return the dot product with the passed in PV
-func (v PV) DotProduct(q PV) float64 {
-	return (v.X * q.X) + (v.Y * q.Y) + (v.Z * q.Z) + (v.W * q.W)
+func (pv PV) DotProduct(o PV) float64 {
+	return (pv.x * o.X()) + (pv.y * o.Y()) + (pv.z * o.Z()) + (pv.w * o.W())
 }
 
 // CrossProduct Returns the cross product with the PV passed in as a PV
-func (v PV) CrossProduct(q PV) PV {
-	return PV{(v.Y * q.Z) - (v.Z * q.Y),
-			  (v.Z * q.X) - (v.X * q.Z),
-			  (v.X * q.Y) - (v.Y * q.X),
+func (pv PV) CrossProduct(o PV) PV {
+	return PV{(pv.y * o.Z()) - (pv.z * o.Y()),
+			  (pv.z * o.X()) - (pv.x * o.Z()),
+			  (pv.x * o.Y()) - (pv.y * o.X()),
 			  0.0}
 }

@@ -45,8 +45,8 @@ func TestPVAdd(t *testing.T) {
 		q PV
 		s PV
 	}{
-		{PV{X:3, Y:-2, Z:5, W:1.0}, PV{X:-2, Y:3, Z:1, W:0.0}, PV{X:1, Y:1, Z:6, W:1.0}},
-		{PV{X:-4, Y:7, Z:2, W:1.0}, PV{X:3, Y:1, Z:1, W:0.0}, PV{X:-1, Y:8, Z:3, W:1.0}},
+		{PV{x:3, y:-2, z:5, w:1.0}, PV{x:-2, y:3, z:1, w:0.0}, PV{x:1, y:1, z:6, w:1.0}},
+		{PV{x:-4, y:7, z:2, w:1.0}, PV{x:3, y:1, z:1, w:0.0}, PV{x:-1, y:8, z:3, w:1.0}},
 	}
 	for _, table := range tables {
 		sum := table.p.Add(table.q)
@@ -62,8 +62,8 @@ func TestPVSubtract(t *testing.T) {
 		q PV
 		s PV
 	}{
-		{PV{X:3, Y:2, Z:1, W:1.0}, PV{X:5, Y:6, Z:7, W:0.0}, PV{X:-2, Y:-4, Z:-6, W:1.0}},
-		{PV{X:3, Y:-2, Z:5, W:0.0}, PV{X:-2, Y:3, Z:1, W:0.0}, PV{X:5, Y:-5, Z:4, W:0.0}},
+		{PV{x:3, y:2, z:1, w:1.0}, PV{x:5, y:6, z:7, w:0.0}, PV{x:-2, y:-4, z:-6, w:1.0}},
+		{PV{x:3, y:-2, z:5, w:0.0}, PV{x:-2, y:3, z:1, w:0.0}, PV{x:5, y:-5, z:4, w:0.0}},
 	}
 	for _, table := range tables {
 		diff := table.p.Subtract(table.q)
@@ -78,7 +78,7 @@ func TestPVNegate(t *testing.T) {
 		v PV
 		n PV
 	}{
-		{PV{X:1, Y:-2, Z:3, W:0.0}, PV{X:-1, Y:2, Z:-3, W:0.0}},
+		{PV{x:1, y:-2, z:3, w:0.0}, PV{x:-1, y:2, z:-3, w:0.0}},
 	}
 	for _, table := range tables {
 		negative := table.v.Negate()
@@ -94,8 +94,8 @@ func TestPVScalar(t *testing.T) {
 		s float64
 		r PV
 	}{
-		{PV{X:1, Y:-2, Z:3, W:1.0}, 3.5, PV{X:3.5, Y:-7, Z:10.5, W:3.5}},
-		{PV{X:1, Y:-2, Z:3, W:1.0}, 0.5, PV{X:0.5, Y:-1, Z:1.5, W:0.5}},
+		{PV{x:1, y:-2, z:3, w:1.0}, 3.5, PV{x:3.5, y:-7, z:10.5, w:3.5}},
+		{PV{x:1, y:-2, z:3, w:1.0}, 0.5, PV{x:0.5, y:-1, z:1.5, w:0.5}},
 	}
 	for _, table := range tables {
 		scalar := table.v.Scalar(table.s)
@@ -110,11 +110,11 @@ func TestPVMagnitude(t *testing.T) {
 		v PV
 		m float64
 	}{
-		{PV{X:1, Y:0, Z:0, W:0}, 1},
-		{PV{X:0, Y:1, Z:0, W:0}, 1},
-		{PV{X:0, Y:0, Z:1, W:0}, 1},
-		{PV{X:1, Y:2, Z:3, W:0}, math.Sqrt(14)},
-		{PV{X:-1, Y:-2, Z:-3, W:0}, math.Sqrt(14)},
+		{PV{x:1, y:0, z:0, w:0}, 1},
+		{PV{x:0, y:1, z:0, w:0}, 1},
+		{PV{x:0, y:0, z:1, w:0}, 1},
+		{PV{x:1, y:2, z:3, w:0}, math.Sqrt(14)},
+		{PV{x:-1, y:-2, z:-3, w:0}, math.Sqrt(14)},
 	}
 	for _, table := range tables {
 		magnitude := table.v.Magnitude()
@@ -129,12 +129,13 @@ func TestPVNormalize(t *testing.T) {
 		v PV
 		n PV
 	}{
-		{PV{X:4, Y:0, Z:0, W:0}, PV{X:1, Y:0, Z:0, W:0}},
-		{PV{X:1, Y:2, Z:3, W:0}, PV{X:0.26726, Y:0.53452, Z:0.80178, W:0}},
+		{PV{x:4, y:0, z:0, w:0}, PV{x:1, y:0, z:0, w:0}},
+		{PV{x:1, y:2, z:3, w:0}, PV{x:0.26726, y:0.53452, z:0.80178, w:0}},
 	}
 	for _, table := range tables {
 		normal := table.v.Normalize()
-		if (math.Abs(table.n.X - normal.X) > 0.00001) || (math.Abs(table.n.Y - normal.Y) > 0.00001) || (math.Abs(table.n.Z - normal.Z) > 0.00001) {
+		if (math.Abs(table.n.X() - normal.X()) > 0.00001) || (math.Abs(table.n.Y() - normal.Y()) > 0.00001) ||
+		   (math.Abs(table.n.Z() - normal.Z()) > 0.00001) {
 			t.Errorf("Expected %v, got %v", table.n, normal)
 		}
 	}
@@ -146,7 +147,7 @@ func TestPVDotProduct(t *testing.T) {
 		u PV
 		d float64
 	}{
-		{PV{X:1, Y:2, Z:3, W:0}, PV{X:2, Y:3, Z:4, W:0}, 20},
+		{PV{x:1, y:2, z:3, w:0}, PV{x:2, y:3, z:4, w:0}, 20},
 	}
 	for _, table := range tables {
 		dot := table.v.DotProduct(table.u)
@@ -162,9 +163,9 @@ func TestCrossProduct(t *testing.T) {
 		u PV
 		c PV
 	}{
-		{PV{X:1, Y:0, Z:0, W:0}, PV{X:0, Y:1, Z:0, W:0}, PV{X:0, Y:0, Z:1, W:0}},
-		{PV{X:0, Y:1, Z:0, W:0}, PV{X:0, Y:0, Z:1, W:0}, PV{X:1, Y:0, Z:0, W:0}},
-		{PV{X:0, Y:0, Z:1, W:0}, PV{X:1, Y:0, Z:0, W:0}, PV{X:0, Y:1, Z:0, W:0}},
+		{PV{x:1, y:0, z:0, w:0}, PV{x:0, y:1, z:0, w:0}, PV{x:0, y:0, z:1, w:0}},
+		{PV{x:0, y:1, z:0, w:0}, PV{x:0, y:0, z:1, w:0}, PV{x:1, y:0, z:0, w:0}},
+		{PV{x:0, y:0, z:1, w:0}, PV{x:1, y:0, z:0, w:0}, PV{x:0, y:1, z:0, w:0}},
 	}
 	for _, table := range tables {
 		cross := table.v.CrossProduct(table.u)
