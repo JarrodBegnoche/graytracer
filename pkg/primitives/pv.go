@@ -50,7 +50,7 @@ func (pv PV) Subtract(o PV) PV {
 
 // Negate Negate the PV to return its opposite
 func (pv PV) Negate() PV {
-	return PV{0 - pv.x, 0 - pv.y, 0 - pv.z, pv.w}
+	return PV{-pv.x, -pv.y, -pv.z, pv.w}
 }
 
 // Scalar Scale a PV by a given value and return the result as a PV
