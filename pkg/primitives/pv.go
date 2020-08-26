@@ -38,6 +38,24 @@ func MakePoint(x, y, z float64) PV {
 	return PV{x:x, y:y, z:z, w:1.0}
 }
 
+// Equals Compares two PVs with an amount for approximation
+func (pv PV) Equals(o PV) bool {
+	EPSILON := 0.00000001
+	if math.Abs(pv.x - o.x) > EPSILON {
+		return false
+	}
+	if math.Abs(pv.y - o.y) > EPSILON {
+		return false
+	}
+	if math.Abs(pv.z - o.z) > EPSILON {
+		return false
+	}
+	if math.Abs(pv.w - o.w) > EPSILON {
+		return false
+	}
+	return true
+}
+
 // Add adds one PV to another and returns the result
 func (pv PV) Add(o PV) PV {
 	return PV{pv.x + o.X(), pv.y + o.Y(), pv.z + o.Z(), pv.w + o.W()}
