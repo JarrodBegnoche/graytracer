@@ -88,14 +88,14 @@ func (m matrix) Multiply(o matrix) matrix {
 }
 
 // MultiplyPV Multiply a matrix by a point/vector
-func (m matrix) MultiplyPV(pv PV) PV {
+func (m matrix) MultiplyPV(p pv) pv {
 	if len(m) != 4 {
-		return PV{}
+		return pv{}
 	}
-	return PV{x:(m[0][0] * pv.X()) + (m[0][1] * pv.Y()) + (m[0][2] * pv.Z()) + (m[0][3] * pv.W()),
-			  y:(m[1][0] * pv.X()) + (m[1][1] * pv.Y()) + (m[1][2] * pv.Z()) + (m[1][3] * pv.W()),
-			  z:(m[2][0] * pv.X()) + (m[2][1] * pv.Y()) + (m[2][2] * pv.Z()) + (m[2][3] * pv.W()),
-			  w:(m[3][0] * pv.X()) + (m[3][1] * pv.Y()) + (m[3][2] * pv.Z()) + (m[3][3] * pv.W())}
+	return pv{x:(m[0][0] * p.X()) + (m[0][1] * p.Y()) + (m[0][2] * p.Z()) + (m[0][3] * p.W()),
+			  y:(m[1][0] * p.X()) + (m[1][1] * p.Y()) + (m[1][2] * p.Z()) + (m[1][3] * p.W()),
+			  z:(m[2][0] * p.X()) + (m[2][1] * p.Y()) + (m[2][2] * p.Z()) + (m[2][3] * p.W()),
+			  w:(m[3][0] * p.X()) + (m[3][1] * p.Y()) + (m[3][2] * p.Z()) + (m[3][3] * p.W())}
 }
 
 // Transpose Flip the rows with the columns of a matrix

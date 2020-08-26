@@ -7,7 +7,7 @@ import (
 
 func TestLinearMovement(t *testing.T) {
 	tables := []struct {
-		origin, result PV
+		origin, result pv
 		x, y, z float64
 		transformation func(x, y, z float64) matrix
 	}{
@@ -27,7 +27,7 @@ func TestLinearMovement(t *testing.T) {
 
 func TestRotation(t *testing.T) {
 	tables := []struct {
-		origin, result PV
+		origin, result pv
 		rad float64
 		rotation func(rad float64) matrix
 		axis string
@@ -50,7 +50,7 @@ func TestRotation(t *testing.T) {
 
 func TestShear(t *testing.T) {
 	tables := []struct {
-		origin, result PV
+		origin, result pv
 		xy, xz, yx, yz, zx, zy float64
 	}{
 		{MakePoint(2, 3, 4), MakePoint(5, 3, 4), 1, 0, 0, 0, 0, 0},
@@ -71,7 +71,7 @@ func TestShear(t *testing.T) {
 
 func TestSequenceAndChain(t *testing.T) {
 	tables := []struct {
-		origin, result PV
+		origin, result pv
 		transforms []matrix
 	}{
 		{MakePoint(1, 0, 1), MakePoint(15, 0, 7), []matrix{RotationX(math.Pi / 2), Scaling(5, 5, 5), Translation(10, 5, 7)}},

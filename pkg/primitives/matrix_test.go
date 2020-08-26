@@ -90,16 +90,15 @@ func TestMatrixMultiply(t *testing.T) {
 func TestMatrixMultiplyPV(t *testing.T) {
 	tables := []struct {
 		matrix1 matrix
-		pv PV
-		product PV
+		p, product pv
 	}{
 		{matrix{{1, 2, 3, 4}, {2, 4, 4, 2}, {8, 6, 4, 1}, {0, 0, 0, 1}},
-		 PV{1, 2, 3, 1}, PV{18, 24, 33, 1}},
+		 MakePoint(1, 2, 3), MakePoint(18, 24, 33)},
 
-		{MakeMatrix(3), PV{4, 3, 2, 1}, PV{}},
+		{MakeMatrix(3), MakeVector(4, 3, 2), MakeVector(0, 0, 0)},
 	}
 	for _, table := range tables {
-		product := table.matrix1.MultiplyPV(table.pv)
+		product := table.matrix1.MultiplyPV(table.p)
 		if product != table.product {
 			t.Errorf("Expect %v, got %v", table.product, product)
 		}
