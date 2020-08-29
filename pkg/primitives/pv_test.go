@@ -7,10 +7,10 @@ import (
 
 func TestPVMake(t * testing.T) {
 	tables := []struct {
-		pv1, pv2 pv
+		pv1, pv2 PV
 	}{
-		{MakePoint(1, 2, 3), pv{1, 2, 3, 1}},
-		{MakeVector(3, 2, 1), pv{3, 2, 1, 0}},
+		{MakePoint(1, 2, 3), PV{1, 2, 3, 1}},
+		{MakeVector(3, 2, 1), PV{3, 2, 1, 0}},
 	}
 	for _, table := range tables {
 		if table.pv1 != table.pv2 {
@@ -21,7 +21,7 @@ func TestPVMake(t * testing.T) {
 
 func TestPVEquals(t *testing.T) {
 	tables := []struct {
-		pv1, pv2 pv
+		pv1, pv2 PV
 		equals bool
 	}{
 		{MakePoint(1, 2, 3), MakePoint(1, 2, 3), true},
@@ -41,13 +41,13 @@ func TestPVEquals(t *testing.T) {
 
 func TestPVMath(t *testing.T) {
 	tables := []struct {
-		pv1, pv2, result pv
-		math func(pv, pv) pv
+		pv1, pv2, result PV
+		math func(PV, PV) PV
 	}{
-		{MakePoint(3, -2, 5), MakeVector(-2, 3, 1), MakePoint(1, 1, 6), pv.Add},
-		{MakePoint(-4, 7, 2), MakeVector(3, 1, 1), MakePoint(-1, 8, 3), pv.Add},
-		{MakePoint(3, 2, 1), MakeVector(5, 6, 7), MakePoint(-2, -4, -6), pv.Subtract},
-		{MakeVector(3, -2, 5), MakeVector(-2, 3, 1), MakeVector(5, -5, 4), pv.Subtract},
+		{MakePoint(3, -2, 5), MakeVector(-2, 3, 1), MakePoint(1, 1, 6), PV.Add},
+		{MakePoint(-4, 7, 2), MakeVector(3, 1, 1), MakePoint(-1, 8, 3), PV.Add},
+		{MakePoint(3, 2, 1), MakeVector(5, 6, 7), MakePoint(-2, -4, -6), PV.Subtract},
+		{MakeVector(3, -2, 5), MakeVector(-2, 3, 1), MakeVector(5, -5, 4), PV.Subtract},
 	}
 	for _, table := range tables {
 		result := table.math(table.pv1, table.pv2)
@@ -59,7 +59,7 @@ func TestPVMath(t *testing.T) {
 
 func TestPVNegate(t *testing.T) {
 	tables := []struct {
-		v, n pv
+		v, n PV
 	}{
 		{MakeVector(1, -2, 3), MakeVector(-1, 2, -3)},
 	}
@@ -73,7 +73,7 @@ func TestPVNegate(t *testing.T) {
 
 func TestPVScalar(t *testing.T) {
 	tables := []struct {
-		v, r pv
+		v, r PV
 		s float64
 	}{
 		{MakePoint(1, -2, 3), MakePoint(3.5, -7, 10.5), 3.5},
@@ -89,7 +89,7 @@ func TestPVScalar(t *testing.T) {
 
 func TestPVMagnitude(t *testing.T) {
 	tables := []struct {
-		v pv
+		v PV
 		m float64
 	}{
 		{MakeVector(1, 0, 0), 1},
@@ -108,7 +108,7 @@ func TestPVMagnitude(t *testing.T) {
 
 func TestPVNormalize(t *testing.T) {
 	tables := []struct {
-		v, n pv
+		v, n PV
 	}{
 		{MakeVector(4, 0, 0), MakeVector(1, 0, 0)},
 		{MakeVector(1, 2, 3), MakeVector(0.2672612419124244, 0.5345224838248488, 0.8017837257372732)},
@@ -123,7 +123,7 @@ func TestPVNormalize(t *testing.T) {
 
 func TestPVDotProduct(t *testing.T) {
 	tables := []struct {
-		v, u pv
+		v, u PV
 		d float64
 	}{
 		{MakeVector(1, 2, 3), MakeVector(2, 3, 4), 20},
@@ -138,7 +138,7 @@ func TestPVDotProduct(t *testing.T) {
 
 func TestCrossProduct(t *testing.T) {
 	tables := []struct {
-		v, u, c pv
+		v, u, c PV
 	}{
 		{MakeVector(1, 0, 0), MakeVector(0, 1, 0), MakeVector(0, 0, 1)},
 		{MakeVector(0, 1, 0), MakeVector(0, 0, 1), MakeVector(1, 0, 0)},

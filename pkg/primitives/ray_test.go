@@ -8,7 +8,7 @@ func TestPosition(t *testing.T) {
 	tables := []struct {
 		ray Ray
 		time float64
-		destination pv
+		destination PV
 	}{
 		{Ray{MakePoint(2, 3, 4), MakeVector(1, 0, 0)}, 0, MakePoint(2, 3, 4)},
 		{Ray{MakePoint(2, 3, 4), MakeVector(1, 0, 0)}, 1, MakePoint(3, 3, 4)},
