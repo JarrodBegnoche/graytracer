@@ -5,7 +5,7 @@ import (
 )
 
 // Translation Move a point, not a vector
-func Translation(x, y, z float64) matrix {
+func Translation(x, y, z float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
 	matrix[0][3] = x
 	matrix[1][3] = y
@@ -14,7 +14,7 @@ func Translation(x, y, z float64) matrix {
 }
 
 // Scaling Scale the point/vector
-func Scaling(x, y, z float64) matrix {
+func Scaling(x, y, z float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
 	matrix[0][0] = x
 	matrix[1][1] = y
@@ -23,7 +23,7 @@ func Scaling(x, y, z float64) matrix {
 }
 
 // RotationX Rotate around the X-Axis
-func RotationX(rad float64) matrix {
+func RotationX(rad float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
 	matrix[1][1] = math.Cos(rad)
 	matrix[2][1] = math.Sin(rad)
@@ -33,7 +33,7 @@ func RotationX(rad float64) matrix {
 }
 
 // RotationY Rotate around the Y-Axis
-func RotationY(rad float64) matrix {
+func RotationY(rad float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
 	matrix[0][0] = math.Cos(rad)
 	matrix[0][2] = math.Sin(rad)
@@ -43,7 +43,7 @@ func RotationY(rad float64) matrix {
 }
 
 // RotationZ Rotate around the Z-Axis
-func RotationZ(rad float64) matrix {
+func RotationZ(rad float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
 	matrix[0][0] = math.Cos(rad)
 	matrix[1][0] = math.Sin(rad)
@@ -53,7 +53,7 @@ func RotationZ(rad float64) matrix {
 }
 
 // Shearing Shear an axis along another axis
-func Shearing(xy, xz, yx, yz, zx, zy float64) matrix {
+func Shearing(xy, xz, yx, yz, zx, zy float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
 	matrix[0][1] = xy
 	matrix[0][2] = xz

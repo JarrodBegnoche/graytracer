@@ -7,9 +7,9 @@ import (
 
 func TestLinearMovement(t *testing.T) {
 	tables := []struct {
-		origin, result pv
+		origin, result PV
 		x, y, z float64
-		transformation func(x, y, z float64) matrix
+		transformation func(x, y, z float64) Matrix
 	}{
 		{MakePoint(-3, 4, 5), MakePoint(2, 1, 7), 5, -3, 2, Translation},
 		{MakeVector(-3, 4, 5), MakeVector(-3, 4, 5), 5, -3, 2, Translation},
@@ -27,9 +27,9 @@ func TestLinearMovement(t *testing.T) {
 
 func TestRotation(t *testing.T) {
 	tables := []struct {
-		origin, result pv
+		origin, result PV
 		rad float64
-		rotation func(rad float64) matrix
+		rotation func(rad float64) Matrix
 		axis string
 	}{
 		{MakePoint(0, 1, 0), MakePoint(0, math.Sqrt(2) / 2, math.Sqrt(2) / 2), math.Pi / 4, RotationX, "X"},
@@ -50,7 +50,7 @@ func TestRotation(t *testing.T) {
 
 func TestShear(t *testing.T) {
 	tables := []struct {
-		origin, result pv
+		origin, result PV
 		xy, xz, yx, yz, zx, zy float64
 	}{
 		{MakePoint(2, 3, 4), MakePoint(5, 3, 4), 1, 0, 0, 0, 0, 0},
@@ -71,10 +71,10 @@ func TestShear(t *testing.T) {
 
 func TestSequenceAndChain(t *testing.T) {
 	tables := []struct {
-		origin, result pv
-		transforms []matrix
+		origin, result PV
+		transforms []Matrix
 	}{
-		{MakePoint(1, 0, 1), MakePoint(15, 0, 7), []matrix{RotationX(math.Pi / 2), Scaling(5, 5, 5), Translation(10, 5, 7)}},
+		{MakePoint(1, 0, 1), MakePoint(15, 0, 7), []Matrix{RotationX(math.Pi / 2), Scaling(5, 5, 5), Translation(10, 5, 7)}},
 	}
 	for _, table := range tables {
 		result := table.transforms[0].MultiplyPV(table.origin)

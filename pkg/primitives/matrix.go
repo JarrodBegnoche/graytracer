@@ -5,11 +5,11 @@ import (
 	"math"
 )
 
-// Matrix2 A 2x2 matrix
-type matrix [][]float64
+// Matrix A square matrix
+type Matrix [][]float64
 
 // MakeMatrix Makes an emptry square matrix of the given size
-func MakeMatrix(size uint8) matrix {
+func MakeMatrix(size uint8) Matrix {
 	m := make([][]float64, size)
 	for x := uint8(0); x < size; x++ {
 		m[x] = make([]float64, size)
@@ -18,7 +18,7 @@ func MakeMatrix(size uint8) matrix {
 }
 
 // MakeIdentityMatrix Make an identity matrix of the given size
-func MakeIdentityMatrix(size uint8) matrix {
+func MakeIdentityMatrix(size uint8) Matrix {
 	m := make([][]float64, size)
 	for x := uint8(0); x < size; x++ {
 		m[x] = make([]float64, size)
@@ -28,7 +28,7 @@ func MakeIdentityMatrix(size uint8) matrix {
 }
 
 // Equals Compares two matrices with an amount for approximation
-func (m matrix) Equals(o matrix) bool {
+func (m Matrix) Equals(o Matrix) bool {
 	size := uint8(len(m))
 	if size != uint8(len(o)) {
 		return false
@@ -45,7 +45,7 @@ func (m matrix) Equals(o matrix) bool {
 }
 
 // Submatrix Return a smaller matrix that exists within
-func (m matrix) Submatrix(row uint8, column uint8) matrix {
+func (m Matrix) Submatrix(row uint8, column uint8) Matrix {
 	size := uint8(len(m))
 	submatrix := MakeMatrix(size - 1)
 	for x := uint8(0); x < size; x++ {
@@ -69,7 +69,7 @@ func (m matrix) Submatrix(row uint8, column uint8) matrix {
 }
 
 // Multiply Matrix multiplication function
-func (m matrix) Multiply(o matrix) matrix {
+func (m Matrix) Multiply(o Matrix) Matrix {
 	size := uint8(len(m))
 	if size != uint8(len(o)) {
 		return nil
@@ -88,18 +88,18 @@ func (m matrix) Multiply(o matrix) matrix {
 }
 
 // MultiplyPV Multiply a matrix by a point/vector
-func (m matrix) MultiplyPV(p pv) pv {
+func (m Matrix) MultiplyPV(p PV) PV {
 	if len(m) != 4 {
-		return pv{}
+		return PV{}
 	}
-	return pv{x:(m[0][0] * p.X()) + (m[0][1] * p.Y()) + (m[0][2] * p.Z()) + (m[0][3] * p.W()),
-			  y:(m[1][0] * p.X()) + (m[1][1] * p.Y()) + (m[1][2] * p.Z()) + (m[1][3] * p.W()),
-			  z:(m[2][0] * p.X()) + (m[2][1] * p.Y()) + (m[2][2] * p.Z()) + (m[2][3] * p.W()),
-			  w:(m[3][0] * p.X()) + (m[3][1] * p.Y()) + (m[3][2] * p.Z()) + (m[3][3] * p.W())}
+	return PV{x:(m[0][0] * p.x) + (m[0][1] * p.y) + (m[0][2] * p.z) + (m[0][3] * p.w),
+			  y:(m[1][0] * p.x) + (m[1][1] * p.y) + (m[1][2] * p.z) + (m[1][3] * p.w),
+			  z:(m[2][0] * p.x) + (m[2][1] * p.y) + (m[2][2] * p.z) + (m[2][3] * p.w),
+			  w:(m[3][0] * p.x) + (m[3][1] * p.y) + (m[3][2] * p.z) + (m[3][3] * p.w)}
 }
 
 // Transpose Flip the rows with the columns of a matrix
-func (m matrix) Transpose() matrix {
+func (m Matrix) Transpose() Matrix {
 	size := uint8(len(m))
 	matrix := MakeMatrix(size)
 	for row := uint8(0); row < size; row++ {
@@ -111,7 +111,7 @@ func (m matrix) Transpose() matrix {
 }
 
 // Determinant Calculates the determinant of a 2x2 matrix
-func (m matrix) Determinant() float64 {
+func (m Matrix) Determinant() float64 {
 	size := uint8(len(m))
 	determinant := float64(0)
 	if size == 2 {
@@ -125,12 +125,12 @@ func (m matrix) Determinant() float64 {
 }
 
 // Minor Calculate the determinant of the submatrix
-func (m matrix) Minor(row, column uint8) float64 {
+func (m Matrix) Minor(row, column uint8) float64 {
 	return (m.Submatrix(row, column)).Determinant()
 }
 
 // Cofactor Calculate minor and negate if necessary
-func (m matrix) Cofactor(row, column uint8) float64 {
+func (m Matrix) Cofactor(row, column uint8) float64 {
 	cofactor := m.Minor(row, column)
 	if (row + column) % 2 == 1 {
 		cofactor = -cofactor
@@ -139,7 +139,7 @@ func (m matrix) Cofactor(row, column uint8) float64 {
 }
 
 // Inverse Invert the function if possible
-func (m matrix) Inverse() (matrix, error) {
+func (m Matrix) Inverse() (Matrix, error) {
 	determinant := m.Determinant()
 	if determinant == 0 {
 		return nil, errors.New("Not invertible")
