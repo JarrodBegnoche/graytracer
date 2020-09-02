@@ -12,7 +12,8 @@ type Sphere struct {
 }
 
 // Intersect Check if a ray intersects
-func (s Sphere) Intersect(r primitives.Ray) (bool, float64, float64) {
+func (s Sphere) Intersect(r primitives.Ray) []float64 {
+	hits := []float64{}
 	// Vector from the sphere's center
 	sray := r.Origin.Subtract(primitives.MakePoint(0, 0, 0))
 	a := r.Direction.DotProduct(r.Direction)
@@ -20,7 +21,11 @@ func (s Sphere) Intersect(r primitives.Ray) (bool, float64, float64) {
 	c := sray.DotProduct(sray) - 1
 	discriminant := (b * b) - (4 * a * c)
 	if discriminant < 0 {
-		return false, 0, 0
+		return hits
 	}
-	return true, (-b - math.Sqrt(discriminant)) / (2 * a), (-b + math.Sqrt(discriminant)) / (2 * a)
+	hits = append(hits, (-b - math.Sqrt(discriminant)) / (2 * a))
+	if discriminant > 0 {
+		hits = append(hits, (-b + math.Sqrt(discriminant)) / (2 * a))
+	}
+	return hits
 }
