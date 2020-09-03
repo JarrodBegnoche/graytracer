@@ -87,17 +87,6 @@ func (m Matrix) Multiply(o Matrix) Matrix {
 	return matrix
 }
 
-// MultiplyPV Multiply a matrix by a point/vector
-func (m Matrix) MultiplyPV(p PV) PV {
-	if len(m) != 4 {
-		return PV{}
-	}
-	return PV{x:(m[0][0] * p.x) + (m[0][1] * p.y) + (m[0][2] * p.z) + (m[0][3] * p.w),
-			  y:(m[1][0] * p.x) + (m[1][1] * p.y) + (m[1][2] * p.z) + (m[1][3] * p.w),
-			  z:(m[2][0] * p.x) + (m[2][1] * p.y) + (m[2][2] * p.z) + (m[2][3] * p.w),
-			  w:(m[3][0] * p.x) + (m[3][1] * p.y) + (m[3][2] * p.z) + (m[3][3] * p.w)}
-}
-
 // Transpose Flip the rows with the columns of a matrix
 func (m Matrix) Transpose() Matrix {
 	size := uint8(len(m))

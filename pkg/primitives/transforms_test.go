@@ -18,7 +18,7 @@ func TestLinearMovement(t *testing.T) {
 	}
 	for _, table := range tables {
 		transform := table.transformation(table.x, table.y, table.z)
-		result := transform.MultiplyPV(table.origin)
+		result := table.origin.Transform(transform)
 		if result != table.result {
 			t.Errorf("Expected %v, got %v", table.result, result)
 		}
@@ -41,7 +41,7 @@ func TestRotation(t *testing.T) {
 	}
 	for _, table := range tables {
 		rotation := table.rotation(table.rad)
-		result := rotation.MultiplyPV(table.origin)
+		result := table.origin.Transform(rotation)
 		if !result.Equals(table.result) {
 			t.Errorf("Rotation%s: Expected %v, got %v", table.axis, table.result, result)
 		}
@@ -62,7 +62,7 @@ func TestShear(t *testing.T) {
 	}
 	for _, table := range tables {
 		shear := Shearing(table.xy, table.xz, table.yx, table.yz, table.zx, table.zy)
-		result := shear.MultiplyPV(table.origin)
+		result := table.origin.Transform(shear)
 		if !result.Equals(table.result) {
 			t.Errorf("Expected %v, got %v", table.result, result)
 		}
@@ -77,9 +77,9 @@ func TestSequenceAndChain(t *testing.T) {
 		{MakePoint(1, 0, 1), MakePoint(15, 0, 7), []Matrix{RotationX(math.Pi / 2), Scaling(5, 5, 5), Translation(10, 5, 7)}},
 	}
 	for _, table := range tables {
-		result := table.transforms[0].MultiplyPV(table.origin)
+		result := table.origin.Transform(table.transforms[0])
 		for _, transform := range table.transforms[1:] {
-			result = transform.MultiplyPV(result)
+			result = result.Transform(transform)
 		}
 		if !result.Equals(table.result) {
 			t.Errorf("Sequence: Expected %v, got %v", table.result, result)
@@ -90,7 +90,7 @@ func TestSequenceAndChain(t *testing.T) {
 		for i := len(table.transforms) - 1; i >= 0; i-- {
 			sequence = sequence.Multiply(table.transforms[i])
 		}
-		result := sequence.MultiplyPV(table.origin)
+		result := table.origin.Transform(sequence)
 		if !result.Equals(table.result) {
 			t.Errorf("Chain: Expected %v, got %v", table.result, result)
 		}

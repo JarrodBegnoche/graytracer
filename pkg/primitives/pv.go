@@ -45,6 +45,17 @@ func (p PV) Subtract(o PV) PV {
 	return PV{p.x - o.x, p.y - o.y, p.z - o.z, p.w - o.w}
 }
 
+// Transform Transform the PV by a matrix
+func (p PV) Transform(m Matrix) PV {
+	if len(m) != 4 {
+		return PV{}
+	}
+	return PV{x:(m[0][0] * p.x) + (m[0][1] * p.y) + (m[0][2] * p.z) + (m[0][3] * p.w),
+			  y:(m[1][0] * p.x) + (m[1][1] * p.y) + (m[1][2] * p.z) + (m[1][3] * p.w),
+			  z:(m[2][0] * p.x) + (m[2][1] * p.y) + (m[2][2] * p.z) + (m[2][3] * p.w),
+			  w:(m[3][0] * p.x) + (m[3][1] * p.y) + (m[3][2] * p.z) + (m[3][3] * p.w)}
+}
+
 // Negate Negate the PV to return its opposite
 func (p PV) Negate() PV {
 	return PV{-p.x, -p.y, -p.z, p.w}
