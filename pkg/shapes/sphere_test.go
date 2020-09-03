@@ -23,17 +23,25 @@ func TestSphereIntersection(t *testing.T) {
 		r primitives.Ray
 		hits []float64
 	}{
-		{Sphere{primitives.MakePoint(0, 0, 0), 1.0},
+		{Sphere{center:primitives.MakePoint(0, 0, 0), radius:1.0, transform:primitives.MakeIdentityMatrix(4)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 1, -5), Direction:primitives.MakeVector(0, 0, 1)},
 		 []float64{5}},
 
-		{Sphere{primitives.MakePoint(0, 0, 0), 1.0},
+		{Sphere{center:primitives.MakePoint(0, 0, 0), radius:1.0, transform:primitives.MakeIdentityMatrix(4)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 2, -5), Direction:primitives.MakeVector(0, 0, 1)},
 		 []float64{}},
 
-		{Sphere{primitives.MakePoint(0, 0, 0), 1.0},
+		{Sphere{center:primitives.MakePoint(0, 0, 0), radius:1.0, transform:primitives.MakeIdentityMatrix(4)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, 5), Direction:primitives.MakeVector(0, 0, 1)},
 		 []float64{-6, -4}},
+
+		{Sphere{center:primitives.MakePoint(0, 0, 0), radius:1.0, transform:primitives.Scaling(2, 2, 2)},
+		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
+		 []float64{3, 7}},
+
+		 {Sphere{center:primitives.MakePoint(0, 0, 0), radius:1.0, transform:primitives.Translation(5, 0, 0)},
+		  primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
+		  []float64{}},
 	}
 	for _, table := range tables {
 		hits := table.s.Intersect(table.r)

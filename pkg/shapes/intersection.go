@@ -1,5 +1,6 @@
 package shapes
 
+// Intersections Map of intersections keyed to their distance
 type Intersections map[float64]Intersection
 
 // Intersection Structure to hold intersection information
