@@ -2,4 +2,4 @@
 Raytracer written in Go
 
 Rendered images:
-![Latest Render](image.png)
+![Latest Render](./image.png)
