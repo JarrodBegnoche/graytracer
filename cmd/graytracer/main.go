@@ -18,10 +18,10 @@ func main() {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
-	// sphere := shapes.MakeSphere(0, 0, 0, 1)
+	sphere := shapes.MakeSphere(1)
 	transform := primitives.Shearing(1, 0, 0, 0, 0, 0)
 	transform = transform.Multiply(primitives.Scaling(0.5, 1, 1))
-	sphere := shapes.MakeTransformedSphere(0, 0, 0, 1, transform)
+	sphere.SetTransform(transform)
 	wallZ := 10.0
 	wallSize := 7.0
 	canvasPixels := 100.0
@@ -30,6 +30,7 @@ func main() {
 	origin := primitives.MakePoint(0, 0, -5)
 	for y := 0; y < height; y++ {
 		worldY := half - (pixelSize * float64(y))
+		altHeight := height - (y + 1)
 		for x := 0; x < width; x++ {
 			worldX := -half + (pixelSize * float64(x))
 			position := primitives.MakePoint(worldX, worldY, wallZ)
@@ -40,9 +41,9 @@ func main() {
 				intersections[hits[i]] = shapes.Intersection{Distance:hits[i], Obj:sphere}
 			}
 			if len(intersections) != 0 {
-				img.Set(x, height - (y + 1), color.White)
+				img.Set(x, altHeight, color.White)
 			} else {
-				img.Set(x, height - (y + 1), color.Black)
+				img.Set(x, altHeight, color.Black)
 			}
 		}
 	}
