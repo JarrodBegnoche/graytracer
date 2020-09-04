@@ -7,33 +7,26 @@ import (
 
 // Sphere Represents a sphere
 type Sphere struct {
-	center primitives.PV
-	radius float64
 	transform primitives.Matrix
 }
 
 // MakeSphere Make a regular sphere with an identity matrix for transform
-func MakeSphere(x, y, z, radius float64) Sphere {
-	return Sphere{center:primitives.MakePoint(x, y, z), radius:radius, transform:primitives.MakeIdentityMatrix(4)}
-}
-
-// MakeTransformedSphere Make a sphere with a custom transform matrix
-func MakeTransformedSphere(x, y, z, radius float64, m primitives.Matrix) Sphere {
-	return Sphere{center:primitives.MakePoint(x, y, z), radius:radius, transform:m}
+func MakeSphere() *Sphere {
+	return &Sphere{transform:primitives.MakeIdentityMatrix(4)}
 }
 
 // SetTransform Set the transform matrix
-func (s Sphere) SetTransform(m primitives.Matrix) {
+func (s *Sphere) SetTransform(m primitives.Matrix) {
 	s.transform = m
 }
 
 // Transform Get the transform matrix
-func (s Sphere) Transform() primitives.Matrix {
+func (s *Sphere) Transform() primitives.Matrix {
 	return s.transform
 }
 
 // Intersect Check if a ray intersects
-func (s Sphere) Intersect(r primitives.Ray) []float64 {
+func (s *Sphere) Intersect(r primitives.Ray) []float64 {
 	hits := []float64{}
 	// convert ray to object space
 	inverse, _ := s.transform.Inverse()
@@ -52,4 +45,14 @@ func (s Sphere) Intersect(r primitives.Ray) []float64 {
 		hits = append(hits, (-b + math.Sqrt(discriminant)) / (2 * a))
 	}
 	return hits
+}
+
+// Normal Calculate the normal at a given point on the sphere
+func (s *Sphere) Normal(worldPoint primitives.PV) primitives.PV {
+	inverse, _ := s.transform.Inverse()
+	objectPoint := worldPoint.Transform(inverse)
+	objectNormal := objectPoint.Subtract(primitives.MakePoint(0, 0, 0))
+	worldNormal := objectNormal.Transform(inverse.Transpose())
+	worldNormal.W = 0.0
+	return worldNormal.Normalize()
 }
