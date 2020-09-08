@@ -22,24 +22,28 @@ func TestSliceEquals(t *testing.T) {
 	}
 }
 
-func TestIntersections(t *testing.T) {
+func TestIntersection(t *testing.T) {
 	tables := []struct {
-		inters Intersections
-		hit float64
+		inters []Intersection
+		distance float64
+		hit bool
 	}{
-		{Intersections{1:Intersection{1, MakeSphere()}, 2:Intersection{2, MakeSphere()}}, 1},
+		{[]Intersection{Intersection{1, MakeSphere()}, Intersection{2, MakeSphere()}}, 1, true},
 
-		{Intersections{-1:Intersection{-1, MakeSphere()}, 1:Intersection{1, MakeSphere()}}, 1},
+		{[]Intersection{Intersection{-1, MakeSphere()}, Intersection{1, MakeSphere()}}, 1, true},
 
-		{Intersections{-12:Intersection{-12, MakeSphere()}, -11:Intersection{-11, MakeSphere()}}, -1},
+		{[]Intersection{Intersection{-12, MakeSphere()}, Intersection{-11, MakeSphere()}}, -1, false},
 
-		{Intersections{5:Intersection{5, MakeSphere()}, 7:Intersection{7, MakeSphere()},
-		               -3:Intersection{-3, MakeSphere()}, 2:Intersection{2, MakeSphere()}}, 2},
+		{[]Intersection{Intersection{5, MakeSphere()}, Intersection{7, MakeSphere()},
+		                Intersection{-3, MakeSphere()}, Intersection{2, MakeSphere()}}, 2, true},
 	}
 	for _, table := range tables {
-		hit := Hit(table.inters)
+		intersection, hit := Hit(table.inters)
 		if hit != table.hit {
-			t.Errorf("Expected %v, got %v", table.hit, hit)
+			t.Errorf("Expected hit %v, got %v", table.hit, hit)
+		}
+		if hit && (intersection.Distance != table.distance) {
+			t.Errorf("Expected distance%v, got %v", table.distance, intersection.Distance)
 		}
 	}
 }

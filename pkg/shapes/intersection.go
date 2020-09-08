@@ -18,9 +18,6 @@ func SliceEquals(a, b []float64) bool {
     return true
 }
 
-// Intersections Map of intersections keyed to their distance
-type Intersections map[float64]Intersection
-
 // Intersection Structure to hold intersection information
 type Intersection struct {
 	Distance float64
@@ -28,12 +25,14 @@ type Intersection struct {
 }
 
 // Hit Get the closest hit from intersections
-func Hit(inters Intersections) float64 {
-	intersection := float64(-1)
-	for k := range inters {
-		if k >= 0  && (k < intersection || intersection == -1) {
-			intersection = k
+func Hit(inters []Intersection) (Intersection, bool) {
+	var intersection Intersection
+	hit := false
+	for _, v := range inters {
+		if v.Distance >= 0  && (v.Distance < intersection.Distance || !hit) {
+			intersection = v
+			hit = true
 		}
 	}
-	return intersection
+	return intersection, hit
 }

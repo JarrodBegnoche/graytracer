@@ -88,3 +88,8 @@ func (p PV) CrossProduct(o PV) PV {
 			  		  (p.z * o.x) - (p.x * o.z),
 			  		  (p.x * o.y) - (p.y * o.x))
 }
+
+// Reflect Calculate the reflection vector from a normal
+func (p PV) Reflect(normal PV) PV {
+	return p.Subtract(normal.Scalar(2 * p.DotProduct(normal)))
+}

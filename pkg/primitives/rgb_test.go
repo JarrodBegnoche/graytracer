@@ -4,24 +4,35 @@ import (
 	"testing"
 )
 
-func TestRGBAccessors(t *testing.T) {
+func TestMakeRGB(t * testing.T) {
 	tables := []struct {
-		rgb RGB
-		red float64
-		green float64
-		blue float64
+		rgb1, rgb2 RGB
 	}{
-		{RGB{red:0.9, green:0.6, blue:0.75}, 0.9, 0.6, 0.75},
+		{MakeRGB(1, 2, 3), RGB{1, 2, 3}},
+		{MakeRGB(3, 2, 1), RGB{3, 2, 1}},
 	}
 	for _, table := range tables {
-		if table.rgb.Red() != table.red {
-			t.Errorf("Expected Red value %v, got %v", table.red, table.rgb.Red())
+		if table.rgb1 != table.rgb2 {
+			t.Errorf("Expected %v, got %v", table.rgb1, table.rgb2)
 		}
-		if table.rgb.Green() != table.green {
-			t.Errorf("Expected Green value %v, got %v", table.green, table.rgb.Green())
-		}
-		if table.rgb.Blue() != table.blue {
-			t.Errorf("Expected Blue value %v, got %v", table.blue, table.rgb.Blue())
+	}
+}
+
+func TestLightEquals(t *testing.T) {
+	tables := []struct {
+		rgb1, rgb2 RGB
+		equals bool
+	}{
+		{MakeRGB(1, 2, 3), MakeRGB(1, 2, 3), true},
+		{MakeRGB(1, 1, 1), MakeRGB(0, 1, 1), false},
+		{MakeRGB(1, 1, 1), MakeRGB(1, 0, 1), false},
+		{MakeRGB(1, 1, 1), MakeRGB(1, 1, 0), false},
+		{MakeRGB(1, 2, 3.123456789), MakeRGB(1, 2, 3.123456788), true},
+	}
+	for _, table := range tables {
+		equals := table.rgb1.Equals(table.rgb2)
+		if equals != table.equals {
+			t.Errorf("PV %v and %v returned %v for Equals", table.rgb1, table.rgb2, equals)
 		}
 	}
 }

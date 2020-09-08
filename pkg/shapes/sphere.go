@@ -8,6 +8,7 @@ import (
 // Sphere Represents a sphere
 type Sphere struct {
 	transform primitives.Matrix
+	material primitives.Material
 }
 
 // MakeSphere Make a regular sphere with an identity matrix for transform
@@ -23,6 +24,16 @@ func (s *Sphere) SetTransform(m primitives.Matrix) {
 // Transform Get the transform matrix
 func (s *Sphere) Transform() primitives.Matrix {
 	return s.transform
+}
+
+// SetMaterial Set the material for the sphere
+func (s *Sphere) SetMaterial(mat primitives.Material) {
+	s.material = mat
+}
+
+// Material Get the material object
+func (s *Sphere) Material() primitives.Material {
+	return s.material
 }
 
 // Intersect Check if a ray intersects

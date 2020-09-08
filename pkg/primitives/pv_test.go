@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func TestPVMake(t * testing.T) {
+func TestMakePV(t * testing.T) {
 	tables := []struct {
 		pv1, pv2 PV
 	}{
@@ -166,6 +166,21 @@ func TestCrossProduct(t *testing.T) {
 		cross := table.v.CrossProduct(table.u)
 		if !cross.Equals(table.c) {
 			t.Errorf("Expected %v, got %v", table.c, cross)
+		}
+	}
+}
+
+func TestReflect(t *testing.T) {
+	tables := []struct {
+		start, normal, reflect PV
+	}{
+		{MakeVector(1, -1, 0), MakeVector(0, 1, 0), MakeVector(1, 1, 0)},
+		{MakeVector(0, -1, 0), MakeVector(0.7071067811865476, 0.7071067811865476, 0), MakeVector(1, 0, 0)},
+	}
+	for _, table := range tables {
+		reflect := table.start.Reflect(table.normal)
+		if !reflect.Equals(table.reflect) {
+			t.Errorf("Expect %v, got %v", table.reflect, reflect)
 		}
 	}
 }
