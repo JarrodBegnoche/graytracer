@@ -22,6 +22,22 @@ func TestSphereTransform(t *testing.T) {
 	}
 }
 
+func TestSphereMaterial(t *testing.T) {
+	tables := []struct {
+		s *Sphere
+		mat primitives.Material
+	}{
+		{MakeSphere(), primitives.Material{Color:primitives.MakeRGB(1, 1, 1),
+										   Ambient:0.1, Diffuse:0.9, Specular:0.9, Shininess:200}},
+	}
+	for _, table := range tables {
+		table.s.SetMaterial(table.mat)
+		if table.s.Material() != table.mat {
+			t.Errorf("Expected %v, got %v", table.mat, table.s.Material())
+		}
+	}
+}
+
 func TestSphereIntersection(t *testing.T) {
 	tables := []struct {
 		s *Sphere
