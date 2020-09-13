@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"math"
 	"os"
 	"runtime"
 	"sync"
@@ -16,68 +17,108 @@ import (
 
 // XYRay Values needed for 
 type XYRay struct {
-	X, Y int
-	Ray primitives.Ray
+	X, Y uint
 }
+var world *components.World
+var img *image.RGBA
+var imgMutex *sync.Mutex
+var camera *components.Camera
+var ch chan(XYRay)
+var wg sync.WaitGroup
 
 // RenderPixel Goroutine to render in a multi-threaded environment
-func RenderPixel(world *components.World, img *image.RGBA, ch chan XYRay, imgMutex *sync.Mutex) {
+func RenderPixel() {
+	defer wg.Done()
 	open := true
 	xyray := XYRay{}
 	for open {
 		xyray, open = <- ch
-		col := world.ColorAt(xyray.Ray)
+		ray := camera.RayForPixel(xyray.X, xyray.Y)
+		col := world.ColorAt(ray)
 		imgMutex.Lock()
-		img.Set(xyray.X, xyray.Y, col.ToImageRGBA())
+		img.Set(int(xyray.X), int(xyray.Y), col.ToImageRGBA())
 		imgMutex.Unlock()
 	}
 }
 
 func main() {
 	fmt.Println("Starting render")
-	var threads, width, height int
+	var width, height uint
+	var threads int
 	flag.IntVar(&threads, "threads", runtime.NumCPU(), "Number of threads for rendering")
-	flag.IntVar(&height, "height", 1000, "Height of rendered image")
-	flag.IntVar(&width, "width", 1000, "Width of rendered image")
-	ch := make(chan XYRay, 1000)
-	imgMutex := &sync.Mutex{}
+	flag.UintVar(&width, "width", 1920, "Width of rendered image")
+	flag.UintVar(&height, "height", 1080, "Height of rendered image")
+	camera = components.MakeCamera(width, height, math.Pi / 3)
+	camera.ViewTransform(primitives.MakePoint(0, 1.5, -5),
+						 primitives.MakePoint(0, 1, 0),
+						 primitives.MakeVector(0, 1, 0))
+	ch = make(chan XYRay, 1000)
+	imgMutex = &sync.Mutex{}
 	start := time.Now()
 	upLeft := image.Point{0, 0}
-	lowRight := image.Point{width, height}
-	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
-	world := &components.World{}
-	sphere := shapes.MakeSphere()
-	sphere.SetMaterial(primitives.Material{Color:primitives.MakeRGB(1, 0.2, 1),
-										   Ambient:0.1, Diffuse:0.9, Specular:0.9, Shininess:200})
-	world.AddObject(sphere)
-	/*transform := primitives.Shearing(1, 0, 0, 0, 0, 0)
-	transform = transform.Multiply(primitives.Scaling(0.5, 1, 1))
-	sphere.SetTransform(transform)*/
+	lowRight := image.Point{int(width), int(height)}
+	img = image.NewRGBA(image.Rectangle{upLeft, lowRight})
+	world = &components.World{}
+	floorMaterial := primitives.Material{Color:primitives.MakeRGB(1, 0.9, 0.9), Ambient:0.1,
+										 Diffuse:0.9, Specular:0, Shininess:200}
+	// Floor
+	floor := shapes.MakeSphere()
+	floor.SetTransform(primitives.Scaling(10, 0.01, 10))
+	floor.SetMaterial(floorMaterial)
+	world.AddObject(floor)
+	// Left Wall
+	leftWall := shapes.MakeSphere()
+	leftWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(
+						  primitives.RotationY(-math.Pi / 4).Multiply(
+						  primitives.RotationX(math.Pi / 2).Multiply(
+						  primitives.Scaling(10, 0.01, 10)))))
+	leftWall.SetMaterial(floorMaterial)
+	world.AddObject(leftWall)
+	// Right Wall
+	rightWall := shapes.MakeSphere()
+	rightWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(
+						   primitives.RotationY(math.Pi / 4).Multiply(
+						   primitives.RotationX(math.Pi / 2).Multiply(
+						   primitives.Scaling(10, 0.01, 10)))))
+	rightWall.SetMaterial(floorMaterial)
+	world.AddObject(rightWall)
+	// Middle
+	middle := shapes.MakeSphere()
+	middle.SetTransform(primitives.Translation(-0.5, 1, 0.5))
+	middle.SetMaterial(primitives.Material{Color:primitives.MakeRGB(0.1, 1, 0.5), Ambient:0.1,
+										   Diffuse:0.7, Specular:0.3, Shininess:200})
+	world.AddObject(middle)
+	// Right
+	right := shapes.MakeSphere()
+	right.SetTransform(primitives.Translation(1.5, 0.5, -0.5).Multiply(
+					   primitives.Scaling(0.5, 0.5, 0.5)))
+	right.SetMaterial(primitives.Material{Color:primitives.MakeRGB(0.5, 1, 0.1), Ambient:0.1,
+										  Diffuse:0.7, Specular:0.3, Shininess:200})
+	world.AddObject(right)
+	// Left
+	left := shapes.MakeSphere()
+	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(
+					  primitives.Scaling(0.33, 0.33, 0.33)))
+	left.SetMaterial(primitives.Material{Color:primitives.MakeRGB(1.0, 0.8, 0.1), Ambient:0.1,
+		  								 Diffuse:0.7, Specular:0.3, Shininess:200})
+	world.AddObject(left)
 	light := components.PointLight{Intensity:primitives.MakeRGB(1, 1, 1),
 								   Position:primitives.MakePoint(-10, 10, -10)}
 	world.AddLight(light)
-	wallZ := 10.0
-	wallSize := 7.0
-	canvasPixels := 1000.0
-	pixelSize := wallSize / canvasPixels
-	half := wallSize / 2
-	origin := primitives.MakePoint(0, 0, -5)
 	fmt.Println("Creating goroutines")
+	wg.Add(threads)
 	for t := 0; t < threads; t++ {
-		go RenderPixel(world, img, ch, imgMutex)
+		go RenderPixel()
 	}
 	fmt.Println("Starting pixel calculations")
-	for y := 0; y < height; y++ {
-		worldY := half - (pixelSize * float64(y))
-		for x := 0; x < width; x++ {
-			worldX := -half + (pixelSize * float64(x))
-			position := primitives.MakePoint(worldX, worldY, wallZ)
-			ray := primitives.Ray{Origin:origin, Direction:position.Subtract(origin).Normalize()}
-			ch <- XYRay{X:x, Y:y, Ray:ray}
+	for y := uint(0); y < height; y++ {
+		for x := uint(0); x < width; x++ {
+			ch <- XYRay{X:x, Y:y}
 		}
 	}
 	fmt.Println("Closing channel")
 	close(ch)
+	wg.Wait()
 	fmt.Printf("Render finished : %v\n", time.Since(start))
 	f, _ := os.Create("image.png")
 	png.Encode(f, img)
