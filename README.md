@@ -2,4 +2,5 @@
 Raytracer written in Go
 
 Rendered images:
-![Latest Render](cmd/graytracer/image.png =500x)
+
+<img src="cmd/graytracer/image.png" width="500"/>
