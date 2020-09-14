@@ -44,7 +44,20 @@ func (w World) ColorAt(ray primitives.Ray) primitives.RGB {
 	}
 	comp := intersection.PrepareComputations(ray)
 	for _, light := range w.lights {
-		result = result.Add(Lighting(comp.Obj.Material(), light, comp.Point, comp.EyeVector, comp.NormalVector))
+		inShadow := false
+		shadowVector := light.Position.Subtract(comp.OverPoint)
+		distance := shadowVector.Magnitude()
+		shadowRay := primitives.Ray{Origin:comp.OverPoint,
+									Direction:shadowVector.Normalize()}
+		shadowIntersections := w.Intersect(shadowRay)
+		shadowIntersection, shadowHit := shadowIntersections.Hit()
+		if shadowHit {
+			if shadowIntersection.Distance < distance {
+				inShadow = true
+			}
+		}
+		result = result.Add(Lighting(comp.Obj.Material(), light, comp.Point,
+							comp.EyeVector, comp.NormalVector, inShadow))
 	}
 	return result
 }

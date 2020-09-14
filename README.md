@@ -3,4 +3,4 @@ Raytracer written in Go
 
 Rendered images:
 
-<img src="cmd/graytracer/image.png" width="500"/>
+<img src="./image.png" width="800"/>

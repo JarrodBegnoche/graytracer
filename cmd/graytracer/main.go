@@ -15,22 +15,23 @@ import (
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
-// XYRay Values needed for 
-type XYRay struct {
+// XY X and Y values for pixel generation
+type XY struct {
 	X, Y uint
 }
+
 var world *components.World
 var img *image.RGBA
 var imgMutex *sync.Mutex
 var camera *components.Camera
-var ch chan(XYRay)
+var ch chan(XY)
 var wg sync.WaitGroup
 
 // RenderPixel Goroutine to render in a multi-threaded environment
 func RenderPixel() {
 	defer wg.Done()
 	open := true
-	xyray := XYRay{}
+	xyray := XY{}
 	for open {
 		xyray, open = <- ch
 		ray := camera.RayForPixel(xyray.X, xyray.Y)
@@ -46,13 +47,14 @@ func main() {
 	var width, height uint
 	var threads int
 	flag.IntVar(&threads, "threads", runtime.NumCPU(), "Number of threads for rendering")
-	flag.UintVar(&width, "width", 1920, "Width of rendered image")
-	flag.UintVar(&height, "height", 1080, "Height of rendered image")
+	flag.UintVar(&width, "width", 480, "Width of rendered image")
+	flag.UintVar(&height, "height", 270, "Height of rendered image")
+	flag.Parse()
 	camera = components.MakeCamera(width, height, math.Pi / 3)
 	camera.ViewTransform(primitives.MakePoint(0, 1.5, -5),
 						 primitives.MakePoint(0, 1, 0),
 						 primitives.MakeVector(0, 1, 0))
-	ch = make(chan XYRay, 1000)
+	ch = make(chan XY, 1000)
 	imgMutex = &sync.Mutex{}
 	start := time.Now()
 	upLeft := image.Point{0, 0}
@@ -113,7 +115,7 @@ func main() {
 	fmt.Println("Starting pixel calculations")
 	for y := uint(0); y < height; y++ {
 		for x := uint(0); x < width; x++ {
-			ch <- XYRay{X:x, Y:y}
+			ch <- XY{X:x, Y:y}
 		}
 	}
 	fmt.Println("Closing channel")

@@ -33,7 +33,6 @@ func (m Matrix) Equals(o Matrix) bool {
 	if size != uint8(len(o)) {
 		return false
 	}
-	EPSILON := 0.00000001
 	for row := uint8(0); row < size; row++ {
 		for column := uint8(0); column < size; column++ {
 			if math.Abs(m[row][column] - o[row][column]) > EPSILON {
