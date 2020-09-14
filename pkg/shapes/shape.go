@@ -10,9 +10,8 @@ func SliceEquals(a, b []float64) bool {
 	if len(a) != len(b) {
         return false
 	}
-	EPSILON := 0.00000001
     for i, v := range a {
-        if math.Abs(v - b[i]) > EPSILON {
+        if math.Abs(v - b[i]) > primitives.EPSILON {
             return false
         }
     }

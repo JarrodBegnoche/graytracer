@@ -70,7 +70,7 @@ func TestWorldColorAt(t *testing.T) {
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4), primitives.Scaling(0.5, 0.5, 0.5)},
 		 PointLight{Intensity:primitives.MakeRGB(1, 1, 1), Position:primitives.MakePoint(0, 0.25, 0)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, 0), Direction:primitives.MakeVector(0, 0, 1)},
-		 primitives.MakeRGB(0.9049844720832575, 0.9049844720832575, 0.9049844720832575)},
+		 primitives.MakeRGB(0.1, 0.1, 0.1)},
 
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
 		 []primitives.Material{primitives.Material{Color:primitives.MakeRGB(0.8, 1.0, 0.6),

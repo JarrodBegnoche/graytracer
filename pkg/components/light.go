@@ -12,19 +12,21 @@ type PointLight struct {
 }
 
 // Lighting Basic lighting calculation function
-func Lighting(mat primitives.Material, light PointLight,
-			  point, eyev, normalv primitives.PV) primitives.RGB {
+func Lighting(mat primitives.Material, light PointLight, point, eyeVector,
+			  normalVector primitives.PV, inShadow bool) primitives.RGB {
 	effectiveColor := mat.Color.Multiply(light.Intensity)
 	var diffuse, specular primitives.RGB
 	lightv := light.Position.Subtract(point).Normalize()
 	ambient := effectiveColor.Scale(mat.Ambient)
-	if lightDotNormal := lightv.DotProduct(normalv); lightDotNormal >= 0 {
-		diffuse = effectiveColor.Scale(mat.Diffuse * lightDotNormal)
-		reflectv := lightv.Negate().Reflect(normalv)
-		reflectDotEye := reflectv.DotProduct(eyev)
-		if reflectDotEye >= 0 {
-			factor := math.Pow(reflectDotEye, mat.Shininess)
-			specular = light.Intensity.Scale(mat.Specular * factor)
+	if !inShadow {
+		if lightDotNormal := lightv.DotProduct(normalVector); lightDotNormal >= 0 {
+			diffuse = effectiveColor.Scale(mat.Diffuse * lightDotNormal)
+			reflectv := lightv.Negate().Reflect(normalVector)
+			reflectDotEye := reflectv.DotProduct(eyeVector)
+			if reflectDotEye >= 0 {
+				factor := math.Pow(reflectDotEye, mat.Shininess)
+				specular = light.Intensity.Scale(mat.Specular * factor)
+			}
 		}
 	}
 	return ambient.Add(diffuse.Add(specular))

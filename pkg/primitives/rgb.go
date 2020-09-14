@@ -15,7 +15,6 @@ func MakeRGB(red, green, blue float64) RGB {
 
 // Equals Compares two RGB color objects with an amount for approximation
 func (r RGB) Equals(g RGB) bool {
-	EPSILON := 0.00000001
 	if math.Abs(r.red - g.red) > EPSILON {
 		return false
 	}

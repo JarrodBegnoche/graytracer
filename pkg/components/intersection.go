@@ -8,7 +8,7 @@ import (
 // Computations Set of pre-computed values used for point detection
 type Computations struct {
 	Intersection
-	Point, EyeVector, NormalVector primitives.PV
+	Point, OverPoint, EyeVector, NormalVector primitives.PV
 	Inside bool
 }
 
@@ -44,6 +44,7 @@ func (i Intersection) PrepareComputations(ray primitives.Ray) Computations {
 	comp.Point = ray.Position(comp.Distance)
 	comp.EyeVector = ray.Direction.Negate()
 	comp.NormalVector = comp.Obj.Normal(comp.Point)
+	comp.OverPoint = comp.Point.Add(comp.NormalVector.Scalar(primitives.EPSILON))
 	if comp.NormalVector.DotProduct(comp.EyeVector) < 0 {
 		comp.NormalVector = comp.NormalVector.Negate()
 		comp.Inside = true

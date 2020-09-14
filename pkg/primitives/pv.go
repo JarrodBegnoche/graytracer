@@ -7,6 +7,9 @@ import (
 // PV represents 3D coordinates and a w variable for distinction between point and vector
 type PV struct {X, Y, Z, W float64}
 
+// EPSILON Value used for approximation
+var EPSILON float64 = 0.00000001
+
 // MakeVector Create a vector PV type
 func MakeVector(x, y, z float64) PV {
 	return PV{X:x, Y:y, Z:z, W:0.0}
@@ -19,7 +22,6 @@ func MakePoint(x, y, z float64) PV {
 
 // Equals Compares two PVs with an amount for approximation
 func (p PV) Equals(o PV) bool {
-	EPSILON := 0.00000001
 	if math.Abs(p.X - o.X) > EPSILON {
 		return false
 	}
