@@ -46,11 +46,13 @@ func main() {
 	fmt.Println("Starting render")
 	var width, height uint
 	var threads int
+	var fov float64
 	flag.IntVar(&threads, "threads", runtime.NumCPU(), "Number of threads for rendering")
 	flag.UintVar(&width, "width", 480, "Width of rendered image")
 	flag.UintVar(&height, "height", 270, "Height of rendered image")
+	flag.Float64Var(&fov, "fov", math.Pi / 3, "Field of View (in Radians)")
 	flag.Parse()
-	camera = components.MakeCamera(width, height, math.Pi / 3)
+	camera = components.MakeCamera(width, height, fov)
 	camera.ViewTransform(primitives.MakePoint(0, 1.5, -5),
 						 primitives.MakePoint(0, 1, 0),
 						 primitives.MakeVector(0, 1, 0))
@@ -64,26 +66,9 @@ func main() {
 	floorMaterial := primitives.Material{Color:primitives.MakeRGB(1, 0.9, 0.9), Ambient:0.1,
 										 Diffuse:0.9, Specular:0, Shininess:200}
 	// Floor
-	floor := shapes.MakeSphere()
-	floor.SetTransform(primitives.Scaling(10, 0.01, 10))
+	floor := shapes.MakePlane()
 	floor.SetMaterial(floorMaterial)
 	world.AddObject(floor)
-	// Left Wall
-	leftWall := shapes.MakeSphere()
-	leftWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(
-						  primitives.RotationY(-math.Pi / 4).Multiply(
-						  primitives.RotationX(math.Pi / 2).Multiply(
-						  primitives.Scaling(10, 0.01, 10)))))
-	leftWall.SetMaterial(floorMaterial)
-	world.AddObject(leftWall)
-	// Right Wall
-	rightWall := shapes.MakeSphere()
-	rightWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(
-						   primitives.RotationY(math.Pi / 4).Multiply(
-						   primitives.RotationX(math.Pi / 2).Multiply(
-						   primitives.Scaling(10, 0.01, 10)))))
-	rightWall.SetMaterial(floorMaterial)
-	world.AddObject(rightWall)
 	// Middle
 	middle := shapes.MakeSphere()
 	middle.SetTransform(primitives.Translation(-0.5, 1, 0.5))
