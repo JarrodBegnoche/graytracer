@@ -3,19 +3,22 @@ package components
 import (
 	"math"
 	"github.com/factorion/graytracer/pkg/primitives"
+	"github.com/factorion/graytracer/pkg/patterns"
+	"github.com/factorion/graytracer/pkg/shapes"
 )
 
 // PointLight Basic light object a specific point
 type PointLight struct {
-	Intensity primitives.RGB
+	Intensity *patterns.RGB
 	Position primitives.PV
 }
 
 // Lighting Basic lighting calculation function
-func Lighting(mat primitives.Material, light PointLight, point, eyeVector,
-			  normalVector primitives.PV, inShadow bool) primitives.RGB {
-	effectiveColor := mat.Color.Multiply(light.Intensity)
-	var diffuse, specular primitives.RGB
+func Lighting(shape shapes.Shape, light PointLight, point, eyeVector,
+			  normalVector primitives.PV, inShadow bool) patterns.RGB {
+	mat := shape.Material()
+	effectiveColor := mat.Pat.ColorAt(shape.UVMapping(point)).Multiply(*light.Intensity)
+	var diffuse, specular patterns.RGB
 	lightv := light.Position.Subtract(point).Normalize()
 	ambient := effectiveColor.Scale(mat.Ambient)
 	if !inShadow {

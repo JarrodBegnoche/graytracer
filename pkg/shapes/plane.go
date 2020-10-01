@@ -35,3 +35,10 @@ func (p *Plane) Normal(worldPoint primitives.PV) primitives.PV {
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
 }
+
+// UVMapping Return the 2D coordinates of an intersected point
+func (p *Plane) UVMapping(point primitives.PV) primitives.PV {
+	inverse, _ := p.transform.Inverse()
+	objectPoint := point.Transform(inverse)
+	return primitives.MakePoint(objectPoint.X, objectPoint.Z, 0)
+}

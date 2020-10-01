@@ -1,26 +1,12 @@
-package primitives
+package patterns
 
 import (
 	"testing"
 )
 
-func TestMakeRGB(t * testing.T) {
-	tables := []struct {
-		rgb1, rgb2 RGB
-	}{
-		{MakeRGB(1, 2, 3), RGB{1, 2, 3}},
-		{MakeRGB(3, 2, 1), RGB{3, 2, 1}},
-	}
-	for _, table := range tables {
-		if table.rgb1 != table.rgb2 {
-			t.Errorf("Expected %v, got %v", table.rgb1, table.rgb2)
-		}
-	}
-}
-
 func TestLightEquals(t *testing.T) {
 	tables := []struct {
-		rgb1, rgb2 RGB
+		rgb1, rgb2 *RGB
 		equals bool
 	}{
 		{MakeRGB(1, 2, 3), MakeRGB(1, 2, 3), true},
@@ -30,7 +16,7 @@ func TestLightEquals(t *testing.T) {
 		{MakeRGB(1, 2, 3.123456789), MakeRGB(1, 2, 3.123456788), true},
 	}
 	for _, table := range tables {
-		equals := table.rgb1.Equals(table.rgb2)
+		equals := table.rgb1.Equals(*table.rgb2)
 		if equals != table.equals {
 			t.Errorf("PV %v and %v returned %v for Equals", table.rgb1, table.rgb2, equals)
 		}
@@ -47,7 +33,7 @@ func TestRGBAdd(t *testing.T) {
 	}
 	for _, table := range tables {
 		sum := table.c1.Add(table.c2)
-		if sum != table.sum {
+		if !sum.Equals(table.sum) {
 			t.Errorf("Expected %v, got %v", table.sum, sum)
 		}
 	}
@@ -63,7 +49,7 @@ func TestRGBSubtract(t *testing.T) {
 	}
 	for _, table := range tables {
 		diff := table.c1.Subtract(table.c2)
-		if diff != table.diff {
+		if !diff.Equals(table.diff) {
 			t.Errorf("Expected %v, got %v", table.diff, diff)
 		}
 	}
@@ -79,7 +65,7 @@ func TestRGBMultiply(t *testing.T) {
 	}
 	for _, table := range tables {
 		prod := table.c1.Multiply(table.c2)
-		if prod != table.prod {
+		if !prod.Equals(table.prod) {
 			t.Errorf("Expected %v, got %v", table.prod, prod)
 		}
 	}
@@ -95,7 +81,7 @@ func TestRGBScale(t * testing.T) {
 	}
 	for _, table := range tables {
 		scale := table.c1.Scale(table.s)
-		if scale != table.scale {
+		if !scale.Equals(table.scale) {
 			t.Errorf("Expected %v, got %v", table.scale, scale)
 		}
 	}
