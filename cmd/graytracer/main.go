@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 	"github.com/factorion/graytracer/pkg/components"
+	"github.com/factorion/graytracer/pkg/patterns"
 	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/shapes"
 )
@@ -63,33 +64,39 @@ func main() {
 	lowRight := image.Point{int(width), int(height)}
 	img = image.NewRGBA(image.Rectangle{upLeft, lowRight})
 	world = &components.World{}
-	floorMaterial := primitives.Material{Color:primitives.MakeRGB(1, 0.9, 0.9), Ambient:0.1,
-										 Diffuse:0.9, Specular:0, Shininess:200}
+	grad1 := patterns.MakeGradient(patterns.MakeRGB(0, 0, 0), patterns.MakeRGB(1, 1,1 ))
+	grad2 := patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0))
+	floorMaterial := patterns.Material{Pat:patterns.MakeStripe(grad1, grad2),
+									   Ambient:0.1, Diffuse:0.9, Specular:0, Shininess:200}
+	//floorMaterial.Pat.SetTransform(primitives.Scaling(0.25, 0, 0))
+	//floorMaterial.Pat.SetTransform(primitives.RotationZ(math.Pi / 2))
 	// Floor
 	floor := shapes.MakePlane()
 	floor.SetMaterial(floorMaterial)
 	world.AddObject(floor)
 	// Middle
 	middle := shapes.MakeSphere()
+	checker := patterns.MakeChecker(patterns.MakeRGB(0.1, 1, 0.5), patterns.MakeRGB(0.9, 0.9, 0.1))
+	checker.SetTransform(primitives.Scaling(0.125, 0.125, 0.125))
 	middle.SetTransform(primitives.Translation(-0.5, 1, 0.5))
-	middle.SetMaterial(primitives.Material{Color:primitives.MakeRGB(0.1, 1, 0.5), Ambient:0.1,
-										   Diffuse:0.7, Specular:0.3, Shininess:200})
+	middle.SetMaterial(patterns.Material{Pat:checker, Ambient:0.1,
+										 Diffuse:0.7, Specular:0.3, Shininess:200})
 	world.AddObject(middle)
 	// Right
 	right := shapes.MakeSphere()
 	right.SetTransform(primitives.Translation(1.5, 0.5, -0.5).Multiply(
 					   primitives.Scaling(0.5, 0.5, 0.5)))
-	right.SetMaterial(primitives.Material{Color:primitives.MakeRGB(0.5, 1, 0.1), Ambient:0.1,
-										  Diffuse:0.7, Specular:0.3, Shininess:200})
+	right.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.5, 1, 0.1), Ambient:0.1,
+										Diffuse:0.7, Specular:0.3, Shininess:200})
 	world.AddObject(right)
 	// Left
 	left := shapes.MakeSphere()
 	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(
 					  primitives.Scaling(0.33, 0.33, 0.33)))
-	left.SetMaterial(primitives.Material{Color:primitives.MakeRGB(1.0, 0.8, 0.1), Ambient:0.1,
-		  								 Diffuse:0.7, Specular:0.3, Shininess:200})
+	left.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(1.0, 0.8, 0.1), Ambient:0.1,
+		  							   Diffuse:0.7, Specular:0.3, Shininess:200})
 	world.AddObject(left)
-	light := components.PointLight{Intensity:primitives.MakeRGB(1, 1, 1),
+	light := components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1),
 								   Position:primitives.MakePoint(-10, 10, -10)}
 	world.AddLight(light)
 	fmt.Println("Creating goroutines")

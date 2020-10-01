@@ -16,9 +16,16 @@ func Translation(x, y, z float64) Matrix {
 // Scaling Scale the point/vector
 func Scaling(x, y, z float64) Matrix {
 	matrix := MakeIdentityMatrix(4)
-	matrix[0][0] = x
-	matrix[1][1] = y
-	matrix[2][2] = z
+	// Setting any of these to 0 makes an non-invertible matrix
+	if x != 0 {
+		matrix[0][0] = x
+	}
+	if y != 0 {
+		matrix[1][1] = y
+	}
+	if z != 0 {
+		matrix[2][2] = z
+	}
 	return matrix
 }
 

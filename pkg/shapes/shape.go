@@ -3,6 +3,7 @@ package shapes
 import (
 	"math"
 	"github.com/factorion/graytracer/pkg/primitives"
+	"github.com/factorion/graytracer/pkg/patterns"
 )
 
 // SliceEquals Check if two slices are equal
@@ -21,12 +22,12 @@ func SliceEquals(a, b []float64) bool {
 // ShapeBase Base struct to be embedded in shape objects
 type ShapeBase struct {
 	transform primitives.Matrix
-	material primitives.Material
+	material patterns.Material
 }
 
 // MakeShapeBase Make a regular sphere with an identity matrix for transform
 func MakeShapeBase() ShapeBase {
-	return ShapeBase{transform:primitives.MakeIdentityMatrix(4), material:primitives.MakeDefaultMaterial()}
+	return ShapeBase{transform:primitives.MakeIdentityMatrix(4), material:patterns.MakeDefaultMaterial()}
 }
 
 // SetTransform Set the transform matrix
@@ -40,12 +41,12 @@ func (s *ShapeBase) Transform() primitives.Matrix {
 }
 
 // SetMaterial Set the material for the sphere
-func (s *ShapeBase) SetMaterial(mat primitives.Material) {
+func (s *ShapeBase) SetMaterial(mat patterns.Material) {
 	s.material = mat
 }
 
 // Material Get the material object
-func (s *ShapeBase) Material() primitives.Material {
+func (s *ShapeBase) Material() patterns.Material {
 	return s.material
 }
 
@@ -55,6 +56,7 @@ type Shape interface {
 	Normal(worldPoint primitives.PV) primitives.PV
 	SetTransform(m primitives.Matrix)
 	Transform() primitives.Matrix
-	SetMaterial(mat primitives.Material)
-	Material() primitives.Material
+	SetMaterial(mat patterns.Material)
+	Material() patterns.Material
+	UVMapping(primitives.PV) primitives.PV
 }

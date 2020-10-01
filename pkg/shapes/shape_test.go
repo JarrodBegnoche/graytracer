@@ -3,6 +3,7 @@ package shapes
 import (
 	"testing"
 	"github.com/factorion/graytracer/pkg/primitives"
+	"github.com/factorion/graytracer/pkg/patterns"
 )
 
 func TestSliceEquals(t *testing.T) {
@@ -42,10 +43,10 @@ func TestSphereTransform(t *testing.T) {
 func TestSphereMaterial(t *testing.T) {
 	tables := []struct {
 		s *Sphere
-		mat primitives.Material
+		mat patterns.Material
 	}{
-		{MakeSphere(), primitives.Material{Color:primitives.MakeRGB(1, 0.9, 0.8),
-										   Ambient:0.1, Diffuse:0.7, Specular:0.6, Shininess:150}},
+		{MakeSphere(), patterns.Material{Pat:patterns.MakeRGB(1, 0.9, 0.8),
+										 Ambient:0.1, Diffuse:0.7, Specular:0.6, Shininess:150}},
 	}
 	for _, table := range tables {
 		table.s.SetMaterial(table.mat)

@@ -46,3 +46,10 @@ func (s *Sphere) Normal(worldPoint primitives.PV) primitives.PV {
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
 }
+
+// UVMapping Return the 2D coordinates of an intersection point
+func (s *Sphere) UVMapping(point primitives.PV) primitives.PV {
+	inverse, _ := s.transform.Inverse()
+	d := primitives.MakePoint(0, 0, 0).Subtract(point.Transform(inverse))
+	return primitives.MakePoint(0.5 + math.Atan2(d.X, d.Z) / (2 * math.Pi), 0.5 - math.Asin(d.Y) / math.Pi, 0)
+}

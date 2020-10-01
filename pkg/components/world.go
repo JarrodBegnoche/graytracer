@@ -3,6 +3,7 @@ package components
 import (
 	"sort"
 	"github.com/factorion/graytracer/pkg/primitives"
+	"github.com/factorion/graytracer/pkg/patterns"
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
@@ -35,8 +36,8 @@ func (w World) Intersect(ray primitives.Ray) Intersections {
 }
 
 // ColorAt Calculate the color of a possible intersection hit
-func (w World) ColorAt(ray primitives.Ray) primitives.RGB {
-	result := primitives.MakeRGB(0, 0, 0)
+func (w World) ColorAt(ray primitives.Ray) patterns.RGB {
+	result := *patterns.MakeRGB(0, 0, 0)
 	intersections := w.Intersect(ray)
 	intersection, hit := intersections.Hit()
 	if !hit {
@@ -56,7 +57,7 @@ func (w World) ColorAt(ray primitives.Ray) primitives.RGB {
 				inShadow = true
 			}
 		}
-		result = result.Add(Lighting(comp.Obj.Material(), light, comp.Point,
+		result = result.Add(Lighting(comp.Obj, light, comp.Point,
 							comp.EyeVector, comp.NormalVector, inShadow))
 	}
 	return result
