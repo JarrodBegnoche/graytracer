@@ -1,17 +1,18 @@
-package patterns
+package patterns_test
 
 import (
 	"testing"
+	"github.com/factorion/graytracer/pkg/patterns"
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 func TestMakeMaterial(t *testing.T) {
 	tables := []struct {
-		mat Material
-		col *RGB
-		ambient, diffuse, specular, shininess float64
+		mat patterns.Material
+		col *patterns.RGB
+		ambient, diffuse, specular, shininess, reflective, transparency, refractiveIndex float64
 	}{
-		{MakeDefaultMaterial(), MakeRGB(1, 1, 1), 0.1, 0.9, 0.9, 200},
+		{patterns.MakeDefaultMaterial(), patterns.MakeRGB(1, 1, 1), 0.1, 0.9, 0.9, 200, 0, 0, 1},
 	}
 	for _, table := range tables {
 		col := table.mat.Pat.ColorAt(primitives.MakePoint(0, 0, 0))
@@ -29,6 +30,15 @@ func TestMakeMaterial(t *testing.T) {
 		}
 		if table.mat.Shininess != table.shininess {
 			t.Errorf("Shininess: Expected %v, got %v", table.shininess, table.mat.Shininess)
+		}
+		if table.mat.Reflective != table.reflective {
+			t.Errorf("Reflective: Expected %v, got %v", table.reflective, table.mat.Reflective)
+		}
+		if table.mat.Transparency != table.transparency {
+			t.Errorf("Transparency: Expected %v, got %v", table.transparency, table.mat.Transparency)
+		}
+		if table.mat.RefractiveIndex != table.refractiveIndex {
+			t.Errorf("RefractiveIndex: Expected %v, got %v", table.refractiveIndex, table.mat.RefractiveIndex)
 		}
 	}
 }
