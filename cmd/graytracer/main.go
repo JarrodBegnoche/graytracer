@@ -36,7 +36,7 @@ func RenderPixel() {
 	for open {
 		xyray, open = <- ch
 		ray := camera.RayForPixel(xyray.X, xyray.Y)
-		col := world.ColorAt(ray)
+		col := world.ColorAt(ray, 5)
 		imgMutex.Lock()
 		img.Set(int(xyray.X), int(xyray.Y), col.ToImageRGBA())
 		imgMutex.Unlock()
@@ -64,40 +64,60 @@ func main() {
 	lowRight := image.Point{int(width), int(height)}
 	img = image.NewRGBA(image.Rectangle{upLeft, lowRight})
 	world = &components.World{}
-	grad1 := patterns.MakeGradient(patterns.MakeRGB(0, 0, 0), patterns.MakeRGB(1, 1,1 ))
-	grad2 := patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0))
-	floorMaterial := patterns.Material{Pat:patterns.MakeStripe(grad1, grad2),
-									   Ambient:0.1, Diffuse:0.9, Specular:0, Shininess:200}
+	floorMaterial := patterns.Material{Pat:patterns.MakeChecker(patterns.MakeRGB(0.05, 0.05, 0.05),
+																patterns.MakeRGB(0.95, 0.95, 0.95)),
+									   Ambient:0.1, Diffuse:0.9, Specular:0, Shininess:200,
+									   Reflective:0, Transparency:0, RefractiveIndex:1}
 	//floorMaterial.Pat.SetTransform(primitives.Scaling(0.25, 0, 0))
 	//floorMaterial.Pat.SetTransform(primitives.RotationZ(math.Pi / 2))
 	// Floor
 	floor := shapes.MakePlane()
 	floor.SetMaterial(floorMaterial)
 	world.AddObject(floor)
+	ceiling := shapes.MakePlane()
+	ceiling.SetMaterial(floorMaterial)
+	ceiling.SetTransform(primitives.Translation(0, 10, 0).Multiply(primitives.RotationX(math.Pi)))
+	world.AddObject(ceiling)
+	frontWall := shapes.MakePlane()
+	frontWall.SetMaterial(floorMaterial)
+	frontWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(primitives.RotationX(math.Pi / 2)))
+	world.AddObject(frontWall)
+	/*backWall := shapes.MakePlane()
+	backWall.SetMaterial(floorMaterial)
+	backWall.SetTransform(primitives.Translation(0, 0, -5).Multiply(primitives.RotationX(-math.Pi / 2)))
+	world.AddObject(backWall)*/
+	leftWall := shapes.MakePlane()
+	leftWall.SetMaterial(floorMaterial)
+	leftWall.SetTransform(primitives.Translation(-5, 0, 0).Multiply(primitives.RotationZ(-math.Pi / 2)))
+	world.AddObject(leftWall)
+	rightWall := shapes.MakePlane()
+	rightWall.SetMaterial(floorMaterial)
+	rightWall.SetTransform(primitives.Translation(5, 0, 0).Multiply(primitives.RotationZ(math.Pi / 2)))
+	world.AddObject(rightWall)
 	// Middle
 	middle := shapes.MakeSphere()
-	checker := patterns.MakeChecker(patterns.MakeRGB(0.1, 1, 0.5), patterns.MakeRGB(0.9, 0.9, 0.1))
+	checker := patterns.MakeChecker(patterns.MakeRGB(0.5, 1, 0.1), patterns.MakeRGB(0.9, 0.9, 0.1))
 	checker.SetTransform(primitives.Scaling(0.125, 0.125, 0.125))
 	middle.SetTransform(primitives.Translation(-0.5, 1, 0.5))
-	middle.SetMaterial(patterns.Material{Pat:checker, Ambient:0.1,
-										 Diffuse:0.7, Specular:0.3, Shininess:200})
+	middle.SetMaterial(patterns.Material{Pat:checker, Ambient:0.1, Diffuse:0.7, Specular:0.3,
+										 Shininess:20, Reflective:0, Transparency:0, RefractiveIndex:1})
 	world.AddObject(middle)
 	// Right
 	right := shapes.MakeSphere()
 	right.SetTransform(primitives.Translation(1.5, 0.5, -0.5).Multiply(
 					   primitives.Scaling(0.5, 0.5, 0.5)))
-	right.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.5, 1, 0.1), Ambient:0.1,
-										Diffuse:0.7, Specular:0.3, Shininess:200})
+	right.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.01, 0.01, 0.01), Ambient:0.1, Diffuse:0.7, Specular:0.7,
+										Shininess:200, Reflective:0.1, Transparency:0.9, RefractiveIndex:1.333333})
 	world.AddObject(right)
 	// Left
 	left := shapes.MakeSphere()
-	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(
-					  primitives.Scaling(0.33, 0.33, 0.33)))
-	left.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(1.0, 0.8, 0.1), Ambient:0.1,
-		  							   Diffuse:0.7, Specular:0.3, Shininess:200})
+	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(primitives.Scaling(0.33, 0.33, 0.33)))
+	left.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0, 0, 0), Ambient:0.1,
+									   Diffuse:0.7, Specular:0.3, Shininess:200, Reflective:1,
+									   Transparency:0, RefractiveIndex:1})
 	world.AddObject(left)
 	light := components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1),
-								   Position:primitives.MakePoint(-10, 10, -10)}
+								   Position:primitives.MakePoint(-4.5, 4.5, -4.5)}
 	world.AddLight(light)
 	fmt.Println("Creating goroutines")
 	wg.Add(threads)

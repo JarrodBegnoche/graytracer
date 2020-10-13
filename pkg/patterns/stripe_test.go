@@ -1,43 +1,62 @@
-package patterns
+package patterns_test
 
 import (
-	"github.com/factorion/graytracer/pkg/primitives"
 	"testing"
+	"github.com/factorion/graytracer/pkg/patterns"
+	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 func TestStripeColorAt(t *testing.T) {
 	tables := []struct {
-		s *Stripe
+		s *patterns.Stripe
 		transform primitives.Matrix
 		point primitives.PV
-		result *RGB
+		result *patterns.RGB
 	}{
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0, 0, 0), MakeRGB(1, 1, 1)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0, 0, 0),
+		 patterns.MakeRGB(1, 1, 1)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0, 1, 0), MakeRGB(1, 1, 1)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0, 1, 0),
+		 patterns.MakeRGB(1, 1, 1)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0, 2, 0), MakeRGB(1, 1, 1)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0, 2, 0),
+		 patterns.MakeRGB(1, 1, 1)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0.9, 0, 0), MakeRGB(1, 1, 1)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0.9, 0, 0),
+		 patterns.MakeRGB(1, 1, 1)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(1, 0, 0), MakeRGB(0, 0, 0)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(1, 0, 0),
+		 patterns.MakeRGB(0, 0, 0)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(-0.1, 0, 0), MakeRGB(0, 0, 0)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-0.1, 0, 0),
+		 patterns.MakeRGB(0, 0, 0)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(-1, 0, 0), MakeRGB(0, 0, 0)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-1, 0, 0),
+		 patterns.MakeRGB(0, 0, 0)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(-1.1, 0, 0), MakeRGB(1, 1, 1)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-1.1, 0, 0),
+		 patterns.MakeRGB(1, 1, 1)},
 		
-		{MakeStripe(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.Scaling(0.5, 0, 0),
-		 primitives.MakePoint(0.6, 0, 0), MakeRGB(0, 0, 0)},
+		{patterns.MakeStripe(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.Scaling(0.5, 0, 0),
+		 primitives.MakePoint(0.6, 0, 0),
+		 patterns.MakeRGB(0, 0, 0)},
 	}
 	for _, table := range tables {
 		table.s.SetTransform(table.transform)

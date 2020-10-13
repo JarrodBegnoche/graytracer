@@ -1,19 +1,20 @@
-package patterns
+package patterns_test
 
-import (
+import(
 	"testing"
+	"github.com/factorion/graytracer/pkg/patterns"
 )
 
 func TestLightEquals(t *testing.T) {
 	tables := []struct {
-		rgb1, rgb2 *RGB
+		rgb1, rgb2 *patterns.RGB
 		equals bool
 	}{
-		{MakeRGB(1, 2, 3), MakeRGB(1, 2, 3), true},
-		{MakeRGB(1, 1, 1), MakeRGB(0, 1, 1), false},
-		{MakeRGB(1, 1, 1), MakeRGB(1, 0, 1), false},
-		{MakeRGB(1, 1, 1), MakeRGB(1, 1, 0), false},
-		{MakeRGB(1, 2, 3.123456789), MakeRGB(1, 2, 3.123456788), true},
+		{patterns.MakeRGB(1, 2, 3), patterns.MakeRGB(1, 2, 3), true},
+		{patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 1, 1), false},
+		{patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(1, 0, 1), false},
+		{patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(1, 1, 0), false},
+		{patterns.MakeRGB(1, 2, 3.123456789), patterns.MakeRGB(1, 2, 3.123456788), true},
 	}
 	for _, table := range tables {
 		equals := table.rgb1.Equals(*table.rgb2)
@@ -25,64 +26,58 @@ func TestLightEquals(t *testing.T) {
 
 func TestRGBAdd(t *testing.T) {
 	tables := []struct {
-		c1 RGB
-		c2 RGB
-		sum RGB
+		c1, c2, sum *patterns.RGB
 	}{
-		{RGB{red:0.9, green:0.6, blue:0.75}, RGB{red:0.7, green:0.1, blue:0.25}, RGB{red:1.6, green:0.7, blue:1.0}},
+		{patterns.MakeRGB(0.9, 0.6, 0.75), patterns.MakeRGB(0.7, 0.1, 0.25), patterns.MakeRGB(1.6, 0.7, 1.0)},
 	}
 	for _, table := range tables {
-		sum := table.c1.Add(table.c2)
-		if !sum.Equals(table.sum) {
-			t.Errorf("Expected %v, got %v", table.sum, sum)
+		sum := table.c1.Add(*table.c2)
+		if !sum.Equals(*table.sum) {
+			t.Errorf("Expected %v, got %v", *table.sum, sum)
 		}
 	}
 }
 
 func TestRGBSubtract(t *testing.T) {
 	tables := []struct {
-		c1 RGB
-		c2 RGB
-		diff RGB
+		c1, c2, diff *patterns.RGB
 	}{
-		{RGB{red:0.9, green:0.6, blue:0.75}, RGB{red:0.5, green:0.1, blue:0.25}, RGB{red:0.4, green:0.5, blue:0.5}},
+		{patterns.MakeRGB(0.9, 0.6, 0.75), patterns.MakeRGB(0.5, 0.1, 0.25), patterns.MakeRGB(0.4, 0.5, 0.5)},
 	}
 	for _, table := range tables {
-		diff := table.c1.Subtract(table.c2)
-		if !diff.Equals(table.diff) {
-			t.Errorf("Expected %v, got %v", table.diff, diff)
+		diff := table.c1.Subtract(*table.c2)
+		if !diff.Equals(*table.diff) {
+			t.Errorf("Expected %v, got %v", *table.diff, diff)
 		}
 	}
 }
 
 func TestRGBMultiply(t *testing.T) {
 	tables := []struct {
-		c1 RGB
-		c2 RGB
-		prod RGB
+		c1, c2, prod *patterns.RGB
 	}{
-		{RGB{red:1.0, green:0.2, blue:0.4}, RGB{red:0.9, green:1.0, blue:0.5}, RGB{red:0.9, green:0.2, blue:0.2}},
+		{patterns.MakeRGB(1.0, 0.2, 0.4), patterns.MakeRGB(0.9, 1.0, 0.5), patterns.MakeRGB(0.9, 0.2, 0.2)},
 	}
 	for _, table := range tables {
-		prod := table.c1.Multiply(table.c2)
-		if !prod.Equals(table.prod) {
-			t.Errorf("Expected %v, got %v", table.prod, prod)
+		prod := table.c1.Multiply(*table.c2)
+		if !prod.Equals(*table.prod) {
+			t.Errorf("Expected %v, got %v", *table.prod, prod)
 		}
 	}
 }
 
 func TestRGBScale(t * testing.T) {
 	tables := []struct {
-		c1 RGB
+		c1 *patterns.RGB
 		s float64
-		scale RGB
+		scale *patterns.RGB
 	}{
-		{RGB{red:0.2, green:0.3, blue:0.4}, 2.0, RGB{red:0.4, green:0.6, blue:0.8}},
+		{patterns.MakeRGB(0.2, 0.3, 0.4), 2.0, patterns.MakeRGB(0.4, 0.6, 0.8)},
 	}
 	for _, table := range tables {
 		scale := table.c1.Scale(table.s)
-		if !scale.Equals(table.scale) {
-			t.Errorf("Expected %v, got %v", table.scale, scale)
+		if !scale.Equals(*table.scale) {
+			t.Errorf("Expected %v, got %v", *table.scale, scale)
 		}
 	}
 }

@@ -15,13 +15,13 @@ type PointLight struct {
 
 // Lighting Basic lighting calculation function
 func Lighting(shape shapes.Shape, light PointLight, point, eyeVector,
-			  normalVector primitives.PV, inShadow bool) patterns.RGB {
+			  normalVector primitives.PV, shade float64) patterns.RGB {
 	mat := shape.Material()
 	effectiveColor := mat.Pat.ColorAt(shape.UVMapping(point)).Multiply(*light.Intensity)
 	var diffuse, specular patterns.RGB
 	lightv := light.Position.Subtract(point).Normalize()
 	ambient := effectiveColor.Scale(mat.Ambient)
-	if !inShadow {
+	if shade > 0 {
 		if lightDotNormal := lightv.DotProduct(normalVector); lightDotNormal >= 0 {
 			diffuse = effectiveColor.Scale(mat.Diffuse * lightDotNormal)
 			reflectv := lightv.Negate().Reflect(normalVector)
@@ -32,5 +32,5 @@ func Lighting(shape shapes.Shape, light PointLight, point, eyeVector,
 			}
 		}
 	}
-	return ambient.Add(diffuse.Add(specular))
+	return ambient.Add(diffuse.Add(specular).Scale(shade))
 }

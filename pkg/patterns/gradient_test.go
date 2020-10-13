@@ -1,31 +1,41 @@
-package patterns
+package patterns_test
 
 import (
 	"testing"
+	"github.com/factorion/graytracer/pkg/patterns"
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 func TestGradientColorAt(t *testing.T) {
 	tables := []struct {
-		g *Gradient
+		g *patterns.Gradient
 		transform primitives.Matrix
 		point primitives.PV
-		result *RGB
+		result *patterns.RGB
 	}{
-		{MakeGradient(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0, 0, 0), MakeRGB(1, 1, 1)},
+		{patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0, 0, 0),
+		 patterns.MakeRGB(1, 1, 1)},
 		
-		{MakeGradient(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0.25, 0, 0), MakeRGB(0.75, 0.75, 0.75)},
+		{patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0.25, 0, 0), patterns.MakeRGB(0.75, 0.75, 0.75)},
 		
-		{MakeGradient(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0.5, 0, 0), MakeRGB(0.5, 0.5, 0.5)},
+		{patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0.5, 0, 0),
+		 patterns.MakeRGB(0.5, 0.5, 0.5)},
 		
-		{MakeGradient(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(0.75, 0, 0), MakeRGB(0.25, 0.25, 0.25)},
+		{patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(0.75, 0, 0),
+		 patterns.MakeRGB(0.25, 0.25, 0.25)},
 		
-		{MakeGradient(MakeRGB(1, 1, 1), MakeRGB(0, 0, 0)), primitives.Scaling(0.5, 0, 0),
-		 primitives.MakePoint(0.75, 0, 0), MakeRGB(0.5, 0.5, 0.5)},
+		{patterns.MakeGradient(patterns.MakeRGB(1, 1, 1), patterns.MakeRGB(0, 0, 0)),
+		 primitives.Scaling(0.5, 0, 0),
+		 primitives.MakePoint(0.75, 0, 0),
+		 patterns.MakeRGB(0.5, 0.5, 0.5)},
 	}
 	for _, table := range tables {
 		table.g.SetTransform(table.transform)
