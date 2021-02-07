@@ -1,18 +1,23 @@
-package primitives
+package primitives_test
 
 import (
 	"testing"
+	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 func TestEquals(t *testing.T) {
 	tables := []struct {
-		ray1, ray2 Ray
+		ray1, ray2 primitives.Ray
 		equals bool
 	}{
-		{Ray{MakePoint(1, 2, 3), MakeVector(0, 0, 1)}, Ray{MakePoint(1, 2, 3), MakeVector(0, 0, 1)}, true},
-		{Ray{MakePoint(1, 2, 3), MakeVector(0, 0, 1)}, Ray{MakePoint(3, 2, 1), MakeVector(0, 0, 1)}, false},
-		{Ray{MakePoint(1, 2, 3), MakeVector(0, 0, 1)},
-		 Ray{MakePoint(1, 2, 3), MakeVector(0, 0, 1.00000000001)}, true},
+		{primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 0, 1)},
+		 primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 0, 1)}, true},
+		
+		{primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 0, 1)},
+		 primitives.Ray{primitives.MakePoint(3, 2, 1), primitives.MakeVector(0, 0, 1)}, false},
+		
+		{primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 0, 1)},
+		 primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 0, 1.00000000001)}, true},
 	}
 	for _, table := range tables {
 		equals := table.ray1.Equals(table.ray2)
@@ -23,14 +28,14 @@ func TestEquals(t *testing.T) {
 }
 func TestPosition(t *testing.T) {
 	tables := []struct {
-		ray Ray
+		ray primitives.Ray
 		time float64
-		destination PV
+		destination primitives.PV
 	}{
-		{Ray{MakePoint(2, 3, 4), MakeVector(1, 0, 0)}, 0, MakePoint(2, 3, 4)},
-		{Ray{MakePoint(2, 3, 4), MakeVector(1, 0, 0)}, 1, MakePoint(3, 3, 4)},
-		{Ray{MakePoint(2, 3, 4), MakeVector(1, 0, 0)}, -1, MakePoint(1, 3, 4)},
-		{Ray{MakePoint(2, 3, 4), MakeVector(1, 0, 0)}, 2.5, MakePoint(4.5, 3, 4)},
+		{primitives.Ray{primitives.MakePoint(2, 3, 4), primitives.MakeVector(1, 0, 0)}, 0, primitives.MakePoint(2, 3, 4)},
+		{primitives.Ray{primitives.MakePoint(2, 3, 4), primitives.MakeVector(1, 0, 0)}, 1, primitives.MakePoint(3, 3, 4)},
+		{primitives.Ray{primitives.MakePoint(2, 3, 4), primitives.MakeVector(1, 0, 0)}, -1, primitives.MakePoint(1, 3, 4)},
+		{primitives.Ray{primitives.MakePoint(2, 3, 4), primitives.MakeVector(1, 0, 0)}, 2.5, primitives.MakePoint(4.5, 3, 4)},
 	}
 	for _, table := range tables {
 		destination := table.ray.Position(table.time)
@@ -42,16 +47,20 @@ func TestPosition(t *testing.T) {
 
 func TestRayTransform(t *testing.T) {
 	tables := []struct {
-		start, end Ray
-		transform Matrix
+		start, end primitives.Ray
+		transform primitives.Matrix
 	}{
-		{Ray{MakePoint(1, 2, 3), MakeVector(0, 1, 0)}, Ray{MakePoint(4, 6, 8), MakeVector(0, 1, 0)},
-		 Translation(3, 4, 5)},
+		{primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 1, 0)},
+		 primitives.Ray{primitives.MakePoint(4, 6, 8), primitives.MakeVector(0, 1, 0)},
+		 primitives.Translation(3, 4, 5)},
 
-		{Ray{MakePoint(1, 2, 3), MakeVector(0, 1, 0)}, Ray{MakePoint(2, 6, 12), MakeVector(0, 3, 0)},
-		 Scaling(2, 3, 4)},
+		{primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 1, 0)},
+		 primitives.Ray{primitives.MakePoint(2, 6, 12), primitives.MakeVector(0, 3, 0)},
+		 primitives.Scaling(2, 3, 4)},
 
-		{Ray{MakePoint(1, 2, 3), MakeVector(0, 1, 0)}, Ray{}, MakeMatrix(3)},
+		{primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 1, 0)},
+		 primitives.Ray{},
+		 primitives.MakeMatrix(3)},
 	}
 	for _, table := range tables {
 		result := table.start.Transform(table.transform)

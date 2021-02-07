@@ -1,16 +1,17 @@
-package primitives
+package primitives_test
 
 import (
-	"testing"
 	"math"
+	"testing"
+	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 func TestMakePV(t * testing.T) {
 	tables := []struct {
-		pv1, pv2 PV
+		pv1, pv2 primitives.PV
 	}{
-		{MakePoint(1, 2, 3), PV{1, 2, 3, 1}},
-		{MakeVector(3, 2, 1), PV{3, 2, 1, 0}},
+		{primitives.MakePoint(1, 2, 3), primitives.PV{1, 2, 3, 1}},
+		{primitives.MakeVector(3, 2, 1), primitives.PV{3, 2, 1, 0}},
 	}
 	for _, table := range tables {
 		if table.pv1 != table.pv2 {
@@ -21,15 +22,15 @@ func TestMakePV(t * testing.T) {
 
 func TestPVEquals(t *testing.T) {
 	tables := []struct {
-		pv1, pv2 PV
+		pv1, pv2 primitives.PV
 		equals bool
 	}{
-		{MakePoint(1, 2, 3), MakePoint(1, 2, 3), true},
-		{MakePoint(1, 2, 3), MakeVector(1, 2, 3), false},
-		{MakePoint(1, 1, 1), MakePoint(0, 1, 1), false},
-		{MakePoint(1, 1, 1), MakePoint(1, 0, 1), false},
-		{MakePoint(1, 1, 1), MakePoint(1, 1, 0), false},
-		{MakePoint(1, 2, 3.123456789), MakePoint(1, 2, 3.123456788), true},
+		{primitives.MakePoint(1, 2, 3), primitives.MakePoint(1, 2, 3), true},
+		{primitives.MakePoint(1, 2, 3), primitives.MakeVector(1, 2, 3), false},
+		{primitives.MakePoint(1, 1, 1), primitives.MakePoint(0, 1, 1), false},
+		{primitives.MakePoint(1, 1, 1), primitives.MakePoint(1, 0, 1), false},
+		{primitives.MakePoint(1, 1, 1), primitives.MakePoint(1, 1, 0), false},
+		{primitives.MakePoint(1, 2, 3.123456789), primitives.MakePoint(1, 2, 3.123456788), true},
 	}
 	for _, table := range tables {
 		equals := table.pv1.Equals(table.pv2)
@@ -41,13 +42,17 @@ func TestPVEquals(t *testing.T) {
 
 func TestPVMath(t *testing.T) {
 	tables := []struct {
-		pv1, pv2, result PV
-		math func(PV, PV) PV
+		pv1, pv2, result primitives.PV
+		math func(primitives.PV, primitives.PV) primitives.PV
 	}{
-		{MakePoint(3, -2, 5), MakeVector(-2, 3, 1), MakePoint(1, 1, 6), PV.Add},
-		{MakePoint(-4, 7, 2), MakeVector(3, 1, 1), MakePoint(-1, 8, 3), PV.Add},
-		{MakePoint(3, 2, 1), MakeVector(5, 6, 7), MakePoint(-2, -4, -6), PV.Subtract},
-		{MakeVector(3, -2, 5), MakeVector(-2, 3, 1), MakeVector(5, -5, 4), PV.Subtract},
+		{primitives.MakePoint(3, -2, 5), primitives.MakeVector(-2, 3, 1), primitives.MakePoint(1, 1, 6),
+		 primitives.PV.Add},
+		{primitives.MakePoint(-4, 7, 2), primitives.MakeVector(3, 1, 1), primitives.MakePoint(-1, 8, 3),
+		 primitives.PV.Add},
+		{primitives.MakePoint(3, 2, 1), primitives.MakeVector(5, 6, 7), primitives.MakePoint(-2, -4, -6),
+		 primitives.PV.Subtract},
+		{primitives.MakeVector(3, -2, 5), primitives.MakeVector(-2, 3, 1), primitives.MakeVector(5, -5, 4),
+		 primitives.PV.Subtract},
 	}
 	for _, table := range tables {
 		result := table.math(table.pv1, table.pv2)
@@ -59,13 +64,13 @@ func TestPVMath(t *testing.T) {
 
 func TestPVTransform(t *testing.T) {
 	tables := []struct {
-		matrix1 Matrix
-		p, product PV
+		matrix1 primitives.Matrix
+		p, product primitives.PV
 	}{
-		{Matrix{{1, 2, 3, 4}, {2, 4, 4, 2}, {8, 6, 4, 1}, {0, 0, 0, 1}},
-		 MakePoint(1, 2, 3), MakePoint(18, 24, 33)},
+		{primitives.Matrix{{1, 2, 3, 4}, {2, 4, 4, 2}, {8, 6, 4, 1}, {0, 0, 0, 1}},
+		 primitives.MakePoint(1, 2, 3), primitives.MakePoint(18, 24, 33)},
 
-		{MakeMatrix(3), MakeVector(4, 3, 2), MakeVector(0, 0, 0)},
+		{primitives.MakeMatrix(3), primitives.MakeVector(4, 3, 2), primitives.MakeVector(0, 0, 0)},
 	}
 	for _, table := range tables {
 		product := table.p.Transform(table.matrix1)
@@ -77,9 +82,9 @@ func TestPVTransform(t *testing.T) {
 
 func TestPVNegate(t *testing.T) {
 	tables := []struct {
-		v, n PV
+		v, n primitives.PV
 	}{
-		{MakeVector(1, -2, 3), MakeVector(-1, 2, -3)},
+		{primitives.MakeVector(1, -2, 3), primitives.MakeVector(-1, 2, -3)},
 	}
 	for _, table := range tables {
 		negative := table.v.Negate()
@@ -91,11 +96,11 @@ func TestPVNegate(t *testing.T) {
 
 func TestPVScalar(t *testing.T) {
 	tables := []struct {
-		v, r PV
+		v, r primitives.PV
 		s float64
 	}{
-		{MakePoint(1, -2, 3), MakePoint(3.5, -7, 10.5), 3.5},
-		{MakeVector(1, -2, 3), MakeVector(0.5, -1, 1.5), 0.5},
+		{primitives.MakePoint(1, -2, 3), primitives.MakePoint(3.5, -7, 10.5), 3.5},
+		{primitives.MakeVector(1, -2, 3), primitives.MakeVector(0.5, -1, 1.5), 0.5},
 	}
 	for _, table := range tables {
 		scalar := table.v.Scalar(table.s)
@@ -107,14 +112,14 @@ func TestPVScalar(t *testing.T) {
 
 func TestPVMagnitude(t *testing.T) {
 	tables := []struct {
-		v PV
+		v primitives.PV
 		m float64
 	}{
-		{MakeVector(1, 0, 0), 1},
-		{MakeVector(0, 1, 0), 1},
-		{MakeVector(0, 0, 1), 1},
-		{MakeVector(1, 2, 3), math.Sqrt(14)},
-		{MakeVector(-1, -2, -3), math.Sqrt(14)},
+		{primitives.MakeVector(1, 0, 0), 1},
+		{primitives.MakeVector(0, 1, 0), 1},
+		{primitives.MakeVector(0, 0, 1), 1},
+		{primitives.MakeVector(1, 2, 3), math.Sqrt(14)},
+		{primitives.MakeVector(-1, -2, -3), math.Sqrt(14)},
 	}
 	for _, table := range tables {
 		magnitude := table.v.Magnitude()
@@ -126,10 +131,10 @@ func TestPVMagnitude(t *testing.T) {
 
 func TestPVNormalize(t *testing.T) {
 	tables := []struct {
-		v, n PV
+		v, n primitives.PV
 	}{
-		{MakeVector(4, 0, 0), MakeVector(1, 0, 0)},
-		{MakeVector(1, 2, 3), MakeVector(0.2672612419124244, 0.5345224838248488, 0.8017837257372732)},
+		{primitives.MakeVector(4, 0, 0), primitives.MakeVector(1, 0, 0)},
+		{primitives.MakeVector(1, 2, 3), primitives.MakeVector(0.2672612419124244, 0.5345224838248488, 0.8017837257372732)},
 	}
 	for _, table := range tables {
 		normal := table.v.Normalize()
@@ -141,10 +146,10 @@ func TestPVNormalize(t *testing.T) {
 
 func TestPVDotProduct(t *testing.T) {
 	tables := []struct {
-		v, u PV
+		v, u primitives.PV
 		d float64
 	}{
-		{MakeVector(1, 2, 3), MakeVector(2, 3, 4), 20},
+		{primitives.MakeVector(1, 2, 3), primitives.MakeVector(2, 3, 4), 20},
 	}
 	for _, table := range tables {
 		dot := table.v.DotProduct(table.u)
@@ -156,11 +161,11 @@ func TestPVDotProduct(t *testing.T) {
 
 func TestCrossProduct(t *testing.T) {
 	tables := []struct {
-		v, u, c PV
+		v, u, c primitives.PV
 	}{
-		{MakeVector(1, 0, 0), MakeVector(0, 1, 0), MakeVector(0, 0, 1)},
-		{MakeVector(0, 1, 0), MakeVector(0, 0, 1), MakeVector(1, 0, 0)},
-		{MakeVector(0, 0, 1), MakeVector(1, 0, 0), MakeVector(0, 1, 0)},
+		{primitives.MakeVector(1, 0, 0), primitives.MakeVector(0, 1, 0), primitives.MakeVector(0, 0, 1)},
+		{primitives.MakeVector(0, 1, 0), primitives.MakeVector(0, 0, 1), primitives.MakeVector(1, 0, 0)},
+		{primitives.MakeVector(0, 0, 1), primitives.MakeVector(1, 0, 0), primitives.MakeVector(0, 1, 0)},
 	}
 	for _, table := range tables {
 		cross := table.v.CrossProduct(table.u)
@@ -172,10 +177,10 @@ func TestCrossProduct(t *testing.T) {
 
 func TestReflect(t *testing.T) {
 	tables := []struct {
-		start, normal, reflect PV
+		start, normal, reflect primitives.PV
 	}{
-		{MakeVector(1, -1, 0), MakeVector(0, 1, 0), MakeVector(1, 1, 0)},
-		{MakeVector(0, -1, 0), MakeVector(0.7071067811865476, 0.7071067811865476, 0), MakeVector(1, 0, 0)},
+		{primitives.MakeVector(1, -1, 0), primitives.MakeVector(0, 1, 0), primitives.MakeVector(1, 1, 0)},
+		{primitives.MakeVector(0, -1, 0), primitives.MakeVector(0.7071067811865476, 0.7071067811865476, 0), primitives.MakeVector(1, 0, 0)},
 	}
 	for _, table := range tables {
 		reflect := table.start.Reflect(table.normal)

@@ -1,9 +1,10 @@
-package shapes
+package shapes_test
 
 import (
 	"testing"
 	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/patterns"
+	"github.com/factorion/graytracer/pkg/shapes"
 )
 
 func TestSliceEquals(t *testing.T) {
@@ -17,7 +18,7 @@ func TestSliceEquals(t *testing.T) {
 		{[]float64{0.0, 1.0}, []float64{0.0, 1.0000000001}, true},
 	}
 	for _, table := range tables {
-		equals := SliceEquals(table.a, table.b)
+		equals := shapes.SliceEquals(table.a, table.b)
 		if equals != table.equals {
 			t.Errorf("Slice %v and %v returned %v as equals", table.a, table.b, equals)
 		}
@@ -26,11 +27,11 @@ func TestSliceEquals(t *testing.T) {
 
 func TestSphereTransform(t *testing.T) {
 	tables := []struct {
-		s *Sphere
+		s *shapes.Sphere
 		transform primitives.Matrix
 	}{
-		{MakeSphere(), primitives.Scaling(2, 2, 2)},
-		{MakeSphere(), primitives.Translation(5, 0, 0)},
+		{shapes.MakeSphere(), primitives.Scaling(2, 2, 2)},
+		{shapes.MakeSphere(), primitives.Translation(5, 0, 0)},
 	}
 	for _, table := range tables {
 		table.s.SetTransform(table.transform)
@@ -42,10 +43,10 @@ func TestSphereTransform(t *testing.T) {
 
 func TestSphereMaterial(t *testing.T) {
 	tables := []struct {
-		s *Sphere
+		s *shapes.Sphere
 		mat patterns.Material
 	}{
-		{MakeSphere(), patterns.Material{Pat:patterns.MakeRGB(1, 0.9, 0.8),
+		{shapes.MakeSphere(), patterns.Material{Pat:patterns.MakeRGB(1, 0.9, 0.8),
 										 Ambient:0.1, Diffuse:0.7, Specular:0.6, Shininess:150}},
 	}
 	for _, table := range tables {
