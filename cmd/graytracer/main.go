@@ -110,9 +110,11 @@ func main() {
 										Shininess:200, Reflective:0.1, Transparency:0.9, RefractiveIndex:1.333333})
 	world.AddObject(right)
 	// Left
-	left := shapes.MakeSphere()
-	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(primitives.Scaling(0.33, 0.33, 0.33)))
-	left.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0, 0, 0), Ambient:0.1,
+	left := shapes.MakeCube()
+	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(
+					  primitives.RotationY(math.Pi / 6).Multiply(
+					  primitives.Scaling(0.33, 0.33, 0.33))))
+	left.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.05, 0.05, 0.05), Ambient:0.1,
 									   Diffuse:0.7, Specular:0.3, Shininess:200, Reflective:1,
 									   Transparency:0, RefractiveIndex:1})
 	world.AddObject(left)
