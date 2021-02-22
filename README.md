@@ -1,5 +1,5 @@
 # graytracer
-![Build](https://github.com/factorion/graytracer/workflows/Build/badge.svg)
+[![Build](https://github.com/factorion/graytracer/actions/workflows/Build.yml/badge.svg)](https://github.com/factorion/graytracer/actions/workflows/Build.yml)
 
 Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Buck](https://pragprog.com/book/jbtracer/the-ray-tracer-challenge).  
 
