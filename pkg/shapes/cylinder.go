@@ -16,25 +16,15 @@ func MakeCylinder(closed bool) *Cylinder {
 	return &Cylinder{MakeShapeBase(), closed}
 }
 
-// checkCap Checks if an intersection happens at the cap
-func (cyl Cylinder) checkCap(r primitives.Ray, t float64) bool {
-	x := r.Origin.X + (t * r.Direction.X)
-	z := r.Origin.Z + (t * r.Direction.Z)
-	return ((x * x) + (z * z)) <= 1
-}
-
 // Intersect Check if a ray intersects
 func (cyl *Cylinder) Intersect(r primitives.Ray) []float64 {
 	hits := []float64{}
 	// convert ray to object space
-	inverse, _ := cyl.transform.Inverse()
-	oray := r.Transform(inverse)
-	direction := oray.Direction.Normalize()
-	// Vector from the Cylinder's center
-	//sray := oray.Origin.Subtract(primitives.MakePoint(0, 0, 0))
-	a := (direction.X * direction.X) + (direction.Z * direction.Z)
+	oray := r.Transform(cyl.Inverse())
+	//oray.Direction = oray.Direction.Normalize()
+	a := (oray.Direction.X * oray.Direction.X) + (oray.Direction.Z * oray.Direction.Z)
 	if math.Abs(a) > primitives.EPSILON {
-		b := (2.0 * oray.Origin.X * direction.X) + (2.0 * oray.Origin.Z * direction.Z)
+		b := 2.0 * ((oray.Origin.X * oray.Direction.X) + (oray.Origin.Z * oray.Direction.Z))
 		c := (oray.Origin.X * oray.Origin.X) + (oray.Origin.Z * oray.Origin.Z) - 1.0
 		discriminant := (b * b) - (4.0 * a * c)
 		if discriminant < 0 {
@@ -60,18 +50,18 @@ func (cyl *Cylinder) Intersect(r primitives.Ray) []float64 {
 	}	
 
 	// Cap checking only matters if cylinder is closed
-	if !cyl.closed || math.Abs(oray.Direction.Y) < primitives.EPSILON {
+	if !cyl.closed || math.Abs(oray.Direction.Y) < 0 {
 		return hits
 	}
 
 	// Check bottom and top caps
 	t := -oray.Origin.Y / oray.Direction.Y
-	if cyl.checkCap(oray, t) {
+	if CheckCap(oray, t) {
 		hits = append(hits, t)
 	}
 
 	t = (1.0 / oray.Direction.Y) + t
-	if cyl.checkCap(oray, t) {
+	if CheckCap(oray, t) {
 		hits = append(hits, t)
 	}
 
@@ -81,8 +71,7 @@ func (cyl *Cylinder) Intersect(r primitives.Ray) []float64 {
 // Normal Calculate the normal at a given point on the Cylinder
 func (cyl *Cylinder) Normal(worldPoint primitives.PV) primitives.PV {
 	var objectNormal primitives.PV
-	inverse, _ := cyl.transform.Inverse()
-	objectPoint := worldPoint.Transform(inverse)
+	objectPoint := worldPoint.Transform(cyl.Inverse())
 	distance := (objectPoint.X * objectPoint.X) + (objectPoint.Z * objectPoint.Z)
 	if (distance < 1) && (objectPoint.Y >= (1.0 - primitives.EPSILON)) {
 		objectNormal = primitives.MakeVector(0, 1, 0)
@@ -91,15 +80,14 @@ func (cyl *Cylinder) Normal(worldPoint primitives.PV) primitives.PV {
 	} else {
 		objectNormal = primitives.MakeVector(objectPoint.X, 0, objectPoint.Z)
 	}	
-	worldNormal := objectNormal.Transform(inverse.Transpose())
+	worldNormal := objectNormal.Transform(cyl.Inverse().Transpose())
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
 }
 
 // UVMapping Return the 2D coordinates of an intersection point
 func (cyl *Cylinder) UVMapping(point primitives.PV) primitives.PV {
-	inverse, _ := cyl.transform.Inverse()
-	objectPoint := point.Transform(inverse)
+	objectPoint := point.Transform(cyl.Inverse())
 	d := primitives.MakePoint(0, 0, 0).Subtract(objectPoint)
 	return primitives.MakePoint(0.5 + math.Atan2(d.X, d.Z) / (2 * math.Pi), objectPoint.Y, 0)
 }

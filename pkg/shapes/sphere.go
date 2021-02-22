@@ -19,8 +19,7 @@ func MakeSphere() *Sphere {
 func (s *Sphere) Intersect(r primitives.Ray) []float64 {
 	hits := []float64{}
 	// convert ray to object space
-	inverse, _ := s.transform.Inverse()
-	oray := r.Transform(inverse)
+	oray := r.Transform(s.Inverse())
 	// Vector from the sphere's center
 	sray := oray.Origin.Subtract(primitives.MakePoint(0, 0, 0))
 	a := oray.Direction.DotProduct(oray.Direction)
@@ -39,17 +38,15 @@ func (s *Sphere) Intersect(r primitives.Ray) []float64 {
 
 // Normal Calculate the normal at a given point on the sphere
 func (s *Sphere) Normal(worldPoint primitives.PV) primitives.PV {
-	inverse, _ := s.transform.Inverse()
-	objectPoint := worldPoint.Transform(inverse)
+	objectPoint := worldPoint.Transform(s.Inverse())
 	objectNormal := objectPoint.Subtract(primitives.MakePoint(0, 0, 0))
-	worldNormal := objectNormal.Transform(inverse.Transpose())
+	worldNormal := objectNormal.Transform(s.Inverse().Transpose())
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
 }
 
 // UVMapping Return the 2D coordinates of an intersection point
 func (s *Sphere) UVMapping(point primitives.PV) primitives.PV {
-	inverse, _ := s.transform.Inverse()
-	d := primitives.MakePoint(0, 0, 0).Subtract(point.Transform(inverse))
+	d := primitives.MakePoint(0, 0, 0).Subtract(point.Transform(s.Inverse()))
 	return primitives.MakePoint(0.5 + math.Atan2(d.X, d.Z) / (2 * math.Pi), 0.5 - math.Asin(d.Y) / math.Pi, 0)
 }

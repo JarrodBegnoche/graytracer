@@ -19,8 +19,7 @@ func MakePlane() *Plane {
 func (p *Plane) Intersect(r primitives.Ray) []float64 {
 	hits := []float64{}
 	// convert ray to object space
-	inverse, _ := p.transform.Inverse()
-	objectRay := r.Transform(inverse)
+	objectRay := r.Transform(p.Inverse())
 	if math.Abs(objectRay.Direction.Y) > primitives.EPSILON {
 		hits = append(hits, -objectRay.Origin.Y / objectRay.Direction.Y)
 	}
@@ -29,16 +28,14 @@ func (p *Plane) Intersect(r primitives.Ray) []float64 {
 
 // Normal Calculate the normal at a given point on the sphere
 func (p *Plane) Normal(worldPoint primitives.PV) primitives.PV {
-	inverse, _ := p.transform.Inverse()
 	objectNormal := primitives.MakeVector(0, 1, 0)
-	worldNormal := objectNormal.Transform(inverse.Transpose())
+	worldNormal := objectNormal.Transform(p.Inverse().Transpose())
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
 }
 
 // UVMapping Return the 2D coordinates of an intersected point
 func (p *Plane) UVMapping(point primitives.PV) primitives.PV {
-	inverse, _ := p.transform.Inverse()
-	objectPoint := point.Transform(inverse)
+	objectPoint := point.Transform(p.Inverse())
 	return primitives.MakePoint(objectPoint.X, objectPoint.Z, 0)
 }

@@ -22,22 +22,32 @@ func SliceEquals(a, b []float64) bool {
 // ShapeBase Base struct to be embedded in shape objects
 type ShapeBase struct {
 	transform primitives.Matrix
+	inverse primitives.Matrix
 	material patterns.Material
 }
 
 // MakeShapeBase Make a regular sphere with an identity matrix for transform
 func MakeShapeBase() ShapeBase {
-	return ShapeBase{transform:primitives.MakeIdentityMatrix(4), material:patterns.MakeDefaultMaterial()}
+	return ShapeBase{transform:primitives.MakeIdentityMatrix(4),
+					 inverse:primitives.MakeIdentityMatrix(4),
+					 material:patterns.MakeDefaultMaterial()}
 }
 
 // SetTransform Set the transform matrix
 func (s *ShapeBase) SetTransform(m primitives.Matrix) {
+	inverse, _ := m.Inverse()
 	s.transform = m
+	s.inverse = inverse
 }
 
 // Transform Get the transform matrix
 func (s *ShapeBase) Transform() primitives.Matrix {
 	return s.transform
+}
+
+// Inverse Get the Inverse of the transform matrix
+func (s *ShapeBase) Inverse() primitives.Matrix {
+	return s.inverse
 }
 
 // SetMaterial Set the material for the sphere
