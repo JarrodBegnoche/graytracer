@@ -21,7 +21,6 @@ func (cyl *Cylinder) Intersect(r primitives.Ray) []float64 {
 	hits := []float64{}
 	// convert ray to object space
 	oray := r.Transform(cyl.Inverse())
-	//oray.Direction = oray.Direction.Normalize()
 	a := (oray.Direction.X * oray.Direction.X) + (oray.Direction.Z * oray.Direction.Z)
 	if math.Abs(a) > primitives.EPSILON {
 		b := 2.0 * ((oray.Origin.X * oray.Direction.X) + (oray.Origin.Z * oray.Direction.Z))
