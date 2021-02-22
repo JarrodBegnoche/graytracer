@@ -32,7 +32,7 @@ func TestCylinderIntersection(t *testing.T) {
 
 		{shapes.MakeCylinder(false),
 		 primitives.Ray{Origin:primitives.MakePoint(0.5, 0, -5), Direction:primitives.MakeVector(0.1, 1, 1)},
-		 primitives.Translation(0, 6.5, 0), []float64{6.80798191702732, 7.088723439378861}},
+		 primitives.Translation(0, 4.5, 0), []float64{4.801980198019795, 5}},
 
 		{shapes.MakeCylinder(false),
 		 primitives.Ray{Origin:primitives.MakePoint(0, 1.5, 0), Direction:primitives.MakeVector(0.1, 1, 0)},
@@ -58,6 +58,10 @@ func TestCylinderIntersection(t *testing.T) {
 		 primitives.Ray{Origin:primitives.MakePoint(0, 1.5, -2), Direction:primitives.MakeVector(0, 0, 1)},
 		 primitives.Scaling(0, 2, 0), []float64{1, 3}},
 
+		{shapes.MakeCylinder(true),
+		 primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)},
+		 primitives.Scaling(0.5, 1, 0.5), []float64{1.5, 2.5}},
+
 		// Closed cylinder intersections
 		{shapes.MakeCylinder(true),
 		 primitives.Ray{Origin:primitives.MakePoint(0, 3, 0), Direction:primitives.MakeVector(0, -1, 0)},
@@ -65,7 +69,7 @@ func TestCylinderIntersection(t *testing.T) {
 		
 		{shapes.MakeCylinder(true),
 		 primitives.Ray{Origin:primitives.MakePoint(0, 3, -2), Direction:primitives.MakeVector(0, -1, 2)},
-		 primitives.Translation(0, 1, 0), []float64{1.1180339887498951, 1}},
+		 primitives.Translation(0, 1, 0), []float64{1.5, 1}},
 		
 		{shapes.MakeCylinder(true),
 		 primitives.Ray{Origin:primitives.MakePoint(0, 4, -2), Direction:primitives.MakeVector(0, -1, 1)},
@@ -73,7 +77,7 @@ func TestCylinderIntersection(t *testing.T) {
 		
 		{shapes.MakeCylinder(true),
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 1, 2)},
-		 primitives.Translation(0, 1, 0), []float64{1.1180339887498951, 1}},
+		 primitives.Translation(0, 1, 0), []float64{1.5, 1}},
 		
 		{shapes.MakeCylinder(true),
 		 primitives.Ray{Origin:primitives.MakePoint(0, -1, -2), Direction:primitives.MakeVector(0, 1, 1)},

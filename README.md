@@ -16,7 +16,7 @@ Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Bu
 - ✅ Chapter 10: [Patterns](https://user-images.githubusercontent.com/40322086/108283582-83a74800-7151-11eb-8810-708903002f40.png)
 - ✅ Chapter 11: [Reflection and Refraction](https://user-images.githubusercontent.com/40322086/108283705-c832e380-7151-11eb-92f5-0ca6fe5b3bf3.png)
 - ✅ Chapter 12: [Cubes](https://user-images.githubusercontent.com/40322086/108283784-ec8ec000-7151-11eb-9726-eb9bd1f61be9.png)
-- ✅ Chapter 13: [Cylinders and Cones]()
+- ✅ Chapter 13: [Cylinders and Cones](https://user-images.githubusercontent.com/40322086/108651820-98a51380-7490-11eb-8519-c72a496c025c.png)
 - Chapter 14: Groups
 - Chapter 15: Triangles
 - Chapter 16: Constructive Solid Geometry

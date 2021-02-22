@@ -54,7 +54,7 @@ func main() {
 	flag.Float64Var(&fov, "fov", math.Pi / 3, "Field of View (in Radians)")
 	flag.Parse()
 	camera = components.MakeCamera(width, height, fov)
-	camera.ViewTransform(primitives.MakePoint(0, 1.5, -5),
+	camera.ViewTransform(primitives.MakePoint(0, 1.5, -4.5),
 						 primitives.MakePoint(0, 1, 0),
 						 primitives.MakeVector(0, 1, 0))
 	ch = make(chan XY, 1000)
@@ -82,42 +82,56 @@ func main() {
 	frontWall.SetMaterial(floorMaterial)
 	frontWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(primitives.RotationX(math.Pi / 2)))
 	world.AddObject(frontWall)
-	/*backWall := shapes.MakePlane()
+	backWall := shapes.MakePlane()
 	backWall.SetMaterial(floorMaterial)
 	backWall.SetTransform(primitives.Translation(0, 0, -5).Multiply(primitives.RotationX(-math.Pi / 2)))
-	world.AddObject(backWall)*/
+	world.AddObject(backWall)
 	leftWall := shapes.MakePlane()
 	leftWall.SetMaterial(floorMaterial)
 	leftWall.SetTransform(primitives.Translation(-5, 0, 0).Multiply(primitives.RotationZ(-math.Pi / 2)))
 	world.AddObject(leftWall)
 	rightWall := shapes.MakePlane()
-	rightWall.SetMaterial(floorMaterial)
+	rightWall.SetMaterial(floorMaterial)		
 	rightWall.SetTransform(primitives.Translation(5, 0, 0).Multiply(primitives.RotationZ(math.Pi / 2)))
 	world.AddObject(rightWall)
-	// Middle
-	middle := shapes.MakeSphere()
-	checker := patterns.MakeChecker(patterns.MakeRGB(0.5, 1, 0.1), patterns.MakeRGB(0.9, 0.9, 0.1))
-	checker.SetTransform(primitives.Scaling(0.125, 0.125, 0.125))
-	middle.SetTransform(primitives.Translation(-0.5, 1, 0.5))
-	middle.SetMaterial(patterns.Material{Pat:checker, Ambient:0.1, Diffuse:0.7, Specular:0.3,
+	// Sphere
+	sphere := shapes.MakeSphere()
+	gradStripe := patterns.MakeStripe(patterns.MakeGradient(patterns.MakeRGB(0.1, 1, 0.1),
+														    patterns.MakeRGB(0.9, 0.1, 0.1)),
+									  patterns.MakeGradient(patterns.MakeRGB(0.9, 0.1, 0.1),
+									                        patterns.MakeRGB(0.1, 1, 0.1)))
+	gradStripe.SetTransform(primitives.Scaling(0.125, 0.125, 0))
+	sphere.SetTransform(primitives.Translation(-0.5, 1, 1.0))
+	sphere.SetMaterial(patterns.Material{Pat:gradStripe, Ambient:0.1, Diffuse:0.7, Specular:0.3,
 										 Shininess:20, Reflective:0, Transparency:0, RefractiveIndex:1})
-	world.AddObject(middle)
-	// Right
-	right := shapes.MakeSphere()
-	right.SetTransform(primitives.Translation(1.5, 0.5, -0.5).Multiply(
-					   primitives.Scaling(0.5, 0.5, 0.5)))
-	right.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.01, 0.01, 0.01), Ambient:0.1, Diffuse:0.7, Specular:0.7,
-										Shininess:200, Reflective:0.1, Transparency:0.9, RefractiveIndex:1.333333})
-	world.AddObject(right)
-	// Left
-	left := shapes.MakeCube()
-	left.SetTransform(primitives.Translation(-1.5, 0.33, -0.75).Multiply(
+	world.AddObject(sphere)
+	// Cylinder
+	cylinder := shapes.MakeCylinder(true)
+	cylinder.SetTransform(primitives.Translation(1.25, 0.25, 0).Multiply(
+						  primitives.RotationY(math.Pi / 4).Multiply(
+						  primitives.RotationX(math.Pi / 2).Multiply(
+					      primitives.Scaling(0.25, 2, 0.25)))))
+	cylinder.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.1, 0.1, 0.9), Ambient:0.1, Diffuse:0.7, Specular:0.3,
+								    	   Shininess:200, Reflective:1, Transparency:0, RefractiveIndex:1})
+	world.AddObject(cylinder)
+	// Cube
+	cube := shapes.MakeCube()
+	cube.SetTransform(primitives.Translation(-1, 0.501, -0.75).Multiply(
 					  primitives.RotationY(math.Pi / 6).Multiply(
-					  primitives.Scaling(0.33, 0.33, 0.33))))
-	left.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.05, 0.05, 0.05), Ambient:0.1,
-									   Diffuse:0.7, Specular:0.3, Shininess:200, Reflective:1,
-									   Transparency:0, RefractiveIndex:1})
-	world.AddObject(left)
+					  primitives.Scaling(0.5, 0.5, 0.5))))
+	cube.SetMaterial(patterns.Material{Pat:patterns.MakeRGB(0.05, 0.05, 0.05), Ambient:0.1,
+									   Diffuse:0.7, Specular:0.7, Shininess:200, Reflective:0.1,
+									   Transparency:0.9, RefractiveIndex:1.52})
+	world.AddObject(cube)
+	// Cone
+	cone := shapes.MakeCone(false)
+	stripe := patterns.MakeStripe(patterns.MakeRGB(0.9, 0, 0.9), patterns.MakeRGB(0.05, 0.05, 0.05))
+	stripe.SetTransform(primitives.Scaling(0.0625, 0, 0))
+	cone.SetTransform(primitives.Translation(0.5, 1, -0.5).Multiply(
+					  primitives.Scaling(0.5, 1, 0.5)))
+	cone.SetMaterial(patterns.Material{Pat:stripe, Ambient:0.1, Diffuse:0.7, Specular:0.5,
+									   Shininess:200, Reflective:0.1, Transparency:0, RefractiveIndex:0})
+	world.AddObject(cone)
 	light := components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1),
 								   Position:primitives.MakePoint(-4.5, 4.5, -4.5)}
 	world.AddLight(light)
