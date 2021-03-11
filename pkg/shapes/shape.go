@@ -1,36 +1,24 @@
 package shapes
 
 import (
-	"math"
 	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/patterns"
 )
-
-// SliceEquals Check if two slices are equal
-func SliceEquals(a, b []float64) bool {
-	if len(a) != len(b) {
-        return false
-	}
-    for i, v := range a {
-        if math.Abs(v - b[i]) > primitives.EPSILON {
-            return false
-        }
-    }
-    return true
-}
 
 // ShapeBase Base struct to be embedded in shape objects
 type ShapeBase struct {
 	transform primitives.Matrix
 	inverse primitives.Matrix
 	material patterns.Material
+	parent Shape
 }
 
 // MakeShapeBase Make a regular sphere with an identity matrix for transform
 func MakeShapeBase() ShapeBase {
 	return ShapeBase{transform:primitives.MakeIdentityMatrix(4),
 					 inverse:primitives.MakeIdentityMatrix(4),
-					 material:patterns.MakeDefaultMaterial()}
+					 material:patterns.MakeDefaultMaterial(),
+					 parent:nil}
 }
 
 // SetTransform Set the transform matrix
@@ -50,7 +38,7 @@ func (s *ShapeBase) Inverse() primitives.Matrix {
 	return s.inverse
 }
 
-// SetMaterial Set the material for the sphere
+// SetMaterial Set the material for the shape
 func (s *ShapeBase) SetMaterial(mat patterns.Material) {
 	s.material = mat
 }
@@ -60,13 +48,44 @@ func (s *ShapeBase) Material() patterns.Material {
 	return s.material
 }
 
+// SetParent Set the parent object of the shape
+func (s *ShapeBase) SetParent(parent Shape) {
+	s.parent = parent
+}
+
+// Parent Get the parent object of the shape
+func (s *ShapeBase) Parent() Shape {
+	return s.parent
+}
+
+// WorldToObjectPV Convert a Point/Vector from world to object-space
+func (s *ShapeBase) WorldToObjectPV(pv primitives.PV) primitives.PV {
+	if (s.parent != nil) {
+		pv = s.parent.WorldToObjectPV(pv)
+	}
+	return pv.Transform(s.Inverse())
+}
+
+// ObjectToWorldPV Convert a Point/Vector from object to world-space
+func (s *ShapeBase) ObjectToWorldPV(pv primitives.PV) primitives.PV {
+	result := pv.Transform(s.Inverse().Transpose())
+	if (s.parent != nil) {
+		result = s.parent.ObjectToWorldPV(result)
+	}
+	return result
+}
+
 // Shape Interface for different 3D and 2D shape modules
 type Shape interface {
-	Intersect(r primitives.Ray) []float64
-	Normal(worldPoint primitives.PV) primitives.PV
-	SetTransform(m primitives.Matrix)
+	Intersect(primitives.Ray) Intersections
+	Normal(primitives.PV) primitives.PV
+	SetTransform(primitives.Matrix)
 	Transform() primitives.Matrix
-	SetMaterial(mat patterns.Material)
+	SetMaterial(patterns.Material)
 	Material() patterns.Material
+	SetParent(Shape)
+	Parent() Shape
 	UVMapping(primitives.PV) primitives.PV
+	WorldToObjectPV(primitives.PV) primitives.PV
+	ObjectToWorldPV(primitives.PV) primitives.PV
 }

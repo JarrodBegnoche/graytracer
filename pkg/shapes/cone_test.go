@@ -33,7 +33,7 @@ func TestConeIntersection(t *testing.T) {
 	for _, table := range tables {
 		table.s.SetTransform(table.transform)
 		hits := table.s.Intersect(table.r)
-		if !shapes.SliceEquals(hits, table.hits) {
+		if !shapes.IntersectEquals(hits, table.hits) {
 			t.Errorf("Expected hit %v, got %v", table.hits, hits)
 		}
 	}

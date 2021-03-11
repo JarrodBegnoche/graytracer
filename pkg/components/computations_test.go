@@ -11,23 +11,23 @@ import (
 
 func TestIntersection(t *testing.T) {
 	tables := []struct {
-		inters components.Intersections
+		inters shapes.Intersections
 		distance float64
 		hit bool
 	}{
-		{[]components.Intersection{components.Intersection{1, shapes.MakeSphere()},
-								   components.Intersection{2, shapes.MakeSphere()}}, 1, true},
+		{[]shapes.Intersection{{Distance:1, Obj:shapes.MakeSphere()},
+							   {Distance:2, Obj:shapes.MakeSphere()}}, 1, true},
 
-		{[]components.Intersection{components.Intersection{-1, shapes.MakeSphere()},
-								   components.Intersection{1, shapes.MakeSphere()}}, 1, true},
+		{[]shapes.Intersection{{Distance:-1, Obj:shapes.MakeSphere()},
+							   {Distance:1, Obj:shapes.MakeSphere()}}, 1, true},
 
-		{[]components.Intersection{components.Intersection{-12, shapes.MakeSphere()},
-								   components.Intersection{-11, shapes.MakeSphere()}}, -1, false},
+		{[]shapes.Intersection{{Distance:-12, Obj:shapes.MakeSphere()},
+							   {Distance:-11, Obj:shapes.MakeSphere()}}, -1, false},
 
-		{[]components.Intersection{components.Intersection{5, shapes.MakeSphere()},
-								   components.Intersection{7, shapes.MakeSphere()},
-								   components.Intersection{-3, shapes.MakeSphere()},
-								   components.Intersection{2, shapes.MakeSphere()}}, 2, true},
+		{[]shapes.Intersection{{Distance:5, Obj:shapes.MakeSphere()},
+							   {Distance:7, Obj:shapes.MakeSphere()},
+							   {Distance:-3, Obj:shapes.MakeSphere()},
+							   {Distance:2, Obj:shapes.MakeSphere()}}, 2, true},
 	}
 	for _, table := range tables {
 		sort.Sort(table.inters)
@@ -43,19 +43,19 @@ func TestIntersection(t *testing.T) {
 
 func TestPrepareComputations(t *testing.T) {
 	tables := []struct {
-		i components.Intersection
+		i shapes.Intersection
 		ray primitives.Ray
 		point, eyev, normalv primitives.PV
 		inside bool
 	}{
-		{components.Intersection{Distance:4, Obj:shapes.MakeSphere()},
+		{shapes.Intersection{Distance:4, Obj:shapes.MakeSphere()},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
 		 primitives.MakePoint(0, 0, -1),
 		 primitives.MakeVector(0, 0, -1),
 		 primitives.MakeVector(0, 0, -1),
 		 false},
 
-		{components.Intersection{Distance:1, Obj:shapes.MakeSphere()},
+		{shapes.Intersection{Distance:1, Obj:shapes.MakeSphere()},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, 0), Direction:primitives.MakeVector(0, 0, 1)},
 		 primitives.MakePoint(0, 0, 1),
 		 primitives.MakeVector(0, 0, -1),
@@ -63,7 +63,7 @@ func TestPrepareComputations(t *testing.T) {
 		 true},
 	}
 	for _, table := range tables {
-		comp := table.i.PrepareComputations(table.ray, components.Intersections{})
+		comp := components.PrepareComputations(table.i, table.ray, shapes.Intersections{})
 		if !comp.Point.Equals(table.point) {
 			t.Errorf("Wrong intersection point, expect %v, got %v", table.point, comp.Point)
 		}
@@ -81,17 +81,17 @@ func TestPrepareComputations(t *testing.T) {
 
 func TestComputeReflection(t *testing.T) {
 	tables := []struct {
-		i components.Intersection
+		i shapes.Intersection
 		ray primitives.Ray
 		reflectv primitives.PV
 	}{
-		{components.Intersection{Distance:math.Sqrt(2), Obj:shapes.MakePlane()},
+		{shapes.Intersection{Distance:math.Sqrt(2), Obj:shapes.MakePlane()},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -1),
 						Direction:primitives.MakeVector(0, -0.7071067811865476, 0.7071067811865476)},
 		 primitives.MakeVector(0, 0.7071067811865476, 0.7071067811865476)},
 	}
 	for _, table := range tables {
-		comp := table.i.PrepareComputations(table.ray, components.Intersections{})
+		comp := components.PrepareComputations(table.i, table.ray, shapes.Intersections{})
 		if !comp.ReflectVector.Equals(table.reflectv) {
 			t.Errorf("Expected %v, got %v", table.reflectv, comp.ReflectVector)
 		}
@@ -127,12 +127,13 @@ func TestComputeRefractionIndices(t *testing.T) {
 			mat.RefractiveIndex = table.refractions[i]
 			s.SetMaterial(mat)
 		}
-		intersections := components.Intersections{}
+		intersections := shapes.Intersections{}
 		for i, d := range table.distance {
-			intersections = append(intersections, components.Intersection{d, table.shapes[table.sIndex[i]]})
+			intersections = append(intersections, shapes.Intersection{Distance:d,
+																      Obj:table.shapes[table.sIndex[i]]})
 		}
 		for i, inter := range intersections {
-			comp := inter.PrepareComputations(table.ray, intersections)
+			comp := components.PrepareComputations(inter, table.ray, intersections)
 			if (comp.Index1 != table.index1[i]) || (comp.Index2 != table.index2[i]) {
 				t.Errorf("Index %v: Expected indices %v, %v; got %v, %v", i, table.index1[i], table.index2[i],
 						 comp.Index1, comp.Index2)

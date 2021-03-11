@@ -19,8 +19,7 @@ func TestWorldIntersect(t *testing.T) {
 		distances []float64
 	}{
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6)},
-			                   patterns.Material{}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6)}, {}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4), primitives.Scaling(0.5, 0.5, 0.5)},
 		 components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1), Position:primitives.MakePoint(-10, 10, -10)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
@@ -56,15 +55,15 @@ func TestReflectedColor(t *testing.T) {
 		result *patterns.RGB
 	}{
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere(), shapes.MakePlane()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0.5,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0.5,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4),
 							 primitives.Scaling(0.5, 0.5, 0.5),
 							 primitives.Translation(0, -1, 0)},
@@ -83,7 +82,7 @@ func TestReflectedColor(t *testing.T) {
 		world.AddLight(table.light)
 		intersections := world.Intersect(table.ray)
 		intersection, _ := intersections.Hit()
-		comp := intersection.PrepareComputations(table.ray, components.Intersections{})
+		comp := components.PrepareComputations(intersection, table.ray, shapes.Intersections{})
 		result := world.ReflectedColor(comp, 5)
 		if !result.Equals(*table.result) {
 			t.Errorf("Expected result color %v, got %v", table.result, result)
@@ -101,12 +100,12 @@ func TestRefractedColor(t *testing.T) {
 		result *patterns.RGB
 	}{
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:1.0, RefractiveIndex:1.5},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:1.0, RefractiveIndex:1.5},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4),
 							 primitives.Scaling(0.5, 0.5, 0.5)},
 		 components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1), Position:primitives.MakePoint(-10, 10, -10)},
@@ -124,7 +123,7 @@ func TestRefractedColor(t *testing.T) {
 		world.AddLight(table.light)
 		xs := world.Intersect(table.ray)
 		intersection, _ := xs.Hit()
-		comp := intersection.PrepareComputations(table.ray, xs)
+		comp := components.PrepareComputations(intersection, table.ray, xs)
 		result := world.RefractedColor(comp, 5)
 		if !result.Equals(*table.result) {
 			t.Errorf("Expected result color %v, got %v", table.result, result)
@@ -142,24 +141,24 @@ func TestWorldColorAt(t *testing.T) {
 		result *patterns.RGB
 	}{
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-			                 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+			                 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4), primitives.Scaling(0.5, 0.5, 0.5)},
 		 components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1), Position:primitives.MakePoint(-10, 10, -10)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
 		 patterns.MakeRGB(0.38066119308103435, 0.47582649135129296, 0.28549589481077575)},
 
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4), primitives.Scaling(0.5, 0.5, 0.5)},
 		 components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1), Position:primitives.MakePoint(0, 0.25, 0)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, 0), Direction:primitives.MakeVector(0, 0, 1)},
@@ -173,39 +172,39 @@ func TestWorldColorAt(t *testing.T) {
 		 patterns.MakeRGB(0.1, 0.1, 0.1)},
 
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4), primitives.Scaling(0.5, 0.5, 0.5)},
 		 components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1), Position:primitives.MakePoint(-10, 10, -10)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 1, 0)},
 		 patterns.MakeRGB(0, 0, 0)},
 
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4), primitives.Scaling(0.5, 0.5, 0.5)},
 		 components.PointLight{Intensity:patterns.MakeRGB(1, 1, 1), Position:primitives.MakePoint(0, 0.25, 0)},
 		 primitives.Ray{Origin:primitives.MakePoint(0, 0, 0.75), Direction:primitives.MakeVector(0, 0, -1)},
 		 patterns.MakeRGB(1, 1, 1)},
 
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere(), shapes.MakePlane()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0.5,
-											   Transparency:0, RefractiveIndex:1}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0.5,
+							  Transparency:0, RefractiveIndex:1}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4),
 							 primitives.Scaling(0.5, 0.5, 0.5),
 							 primitives.Translation(0, -1, 0)},
@@ -216,18 +215,18 @@ func TestWorldColorAt(t *testing.T) {
 
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere(),
 						shapes.MakePlane(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0.5, RefractiveIndex:1.5},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 0, 0), Ambient:0.5,
-							   				   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1.0}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0.5, RefractiveIndex:1.5},
+							 {Pat:patterns.MakeRGB(1, 0, 0), Ambient:0.5,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1.0}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4),
 							 primitives.Scaling(0.5, 0.5, 0.5),
 							 primitives.Translation(0, -1, 0),
@@ -239,18 +238,18 @@ func TestWorldColorAt(t *testing.T) {
 		
 		{[]shapes.Shape{shapes.MakeSphere(), shapes.MakeSphere(),
 						shapes.MakePlane(), shapes.MakeSphere()},
-		 []patterns.Material{patterns.Material{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
-											   Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0.5,
-											   Transparency:0.5, RefractiveIndex:1.5},
-							 patterns.Material{Pat:patterns.MakeRGB(1, 0, 0), Ambient:0.5,
-											   Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
-											   Transparency:0, RefractiveIndex:1.0}},
+		 []patterns.Material{{Pat:patterns.MakeRGB(0.8, 1.0, 0.6), Ambient:0.1,
+							  Diffuse:0.7, Specular:0.2, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1},
+							 {Pat:patterns.MakeRGB(1, 1, 1), Ambient:0.1,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0.5,
+							  Transparency:0.5, RefractiveIndex:1.5},
+							 {Pat:patterns.MakeRGB(1, 0, 0), Ambient:0.5,
+							  Diffuse:0.9, Specular:0.9, Shininess:200, Reflective:0,
+							  Transparency:0, RefractiveIndex:1.0}},
 		 []primitives.Matrix{primitives.MakeIdentityMatrix(4),
 							 primitives.Scaling(0.5, 0.5, 0.5),
 							 primitives.Translation(0, -1, 0),
@@ -332,7 +331,7 @@ func TestSchlick(t *testing.T) {
 		world.AddObject(table.shape)
 		xs := world.Intersect(table.ray)
 		intersection, _ := xs.Hit()
-		comps := intersection.PrepareComputations(table.ray, xs)
+		comps := components.PrepareComputations(intersection, table.ray, xs)
 		reflectance := comps.Schlick()
 		if math.Abs(reflectance - table.reflectance) > primitives.EPSILON {
 			t.Errorf("Expected %v, got %v", table.reflectance, reflectance)

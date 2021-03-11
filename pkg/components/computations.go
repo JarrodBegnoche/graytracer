@@ -8,7 +8,7 @@ import (
 
 // Computations Set of pre-computed values used for point detection
 type Computations struct {
-	Intersection
+	shapes.Intersection
 	Point, OverPoint, UnderPoint, EyeVector, NormalVector, ReflectVector primitives.PV
 	Index1, Index2 float64
 	Inside bool
@@ -30,34 +30,10 @@ func (c Computations) Schlick() float64 {
 	return r0 + ((1 - r0) * math.Pow(1 - cos, 5))
 }
 
-// Intersection Structure to hold intersection information
-type Intersection struct {
-	Distance float64
-	Obj shapes.Shape
-}
 
-// Intersections Sortable list of intersection structs
-type Intersections []Intersection
-
-// Necessary functions to make Intersections sortable
-func (i Intersections) Len() int { return len(i) }
-
-func (i Intersections) Less(j, k int) bool { return i[j].Distance < i[k].Distance }
-
-func (i Intersections) Swap(j, k int) { i[j], i[k] = i[k], i[j] }
-
-// Hit Get the closest hit from intersections, assumes i is sorted
-func (i Intersections) Hit() (Intersection, bool) {
-	for _, v := range i {
-		if v.Distance >= 0 {
-			return v, true
-		}
-	}
-	return Intersection{}, false
-}
 
 // PrepareComputations Calculates the vectors at the point on the object
-func (i Intersection) PrepareComputations(ray primitives.Ray, xs Intersections) Computations {
+func PrepareComputations(i shapes.Intersection, ray primitives.Ray, xs shapes.Intersections) Computations {
 	comp := Computations{Intersection:i}
 	comp.Point = ray.Position(comp.Distance)
 	comp.EyeVector = ray.Direction.Negate()

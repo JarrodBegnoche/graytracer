@@ -32,7 +32,7 @@ func TestPlaneIntersection(t *testing.T) {
 	for _, table := range tables {
 		table.p.SetTransform(table.transform)
 		hits := table.p.Intersect(table.r)
-		if !shapes.SliceEquals(hits, table.hits) {
+		if !shapes.IntersectEquals(hits, table.hits) {
 			t.Errorf("Expected hit %v, got %v", table.hits, hits)
 		}
 	}
