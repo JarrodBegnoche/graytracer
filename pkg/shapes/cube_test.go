@@ -49,7 +49,7 @@ func TestCubeIntersection(t *testing.T) {
 	for _, table := range tables {
 		table.c.SetTransform(table.transform)
 		hits := table.c.Intersect(table.r)
-		if !shapes.SliceEquals(hits, table.hits) {
+		if !shapes.IntersectEquals(hits, table.hits) {
 			t.Errorf("Expected hit %v, got %v", table.hits, hits)
 		}
 	}

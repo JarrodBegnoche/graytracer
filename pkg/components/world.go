@@ -25,12 +25,10 @@ func (w *World) AddLight(light PointLight) {
 }
 
 // Intersect Calculate the intersections from the ray to world objects
-func (w World) Intersect(ray primitives.Ray) Intersections {
-	var i Intersections
+func (w World) Intersect(ray primitives.Ray) shapes.Intersections {
+	var i shapes.Intersections
 	for _, s := range w.objects {
-		for _, h := range s.Intersect(ray) {
-			i = append(i, Intersection{Distance:h, Obj:s})
-		}
+		i = append(i, s.Intersect(ray)...)
 	}
 	sort.Sort(i)
 	return i
@@ -76,7 +74,7 @@ func (w World) ColorAt(ray primitives.Ray, remaining int) patterns.RGB {
 	if !hit {
 		return surface
 	}
-	comp := intersection.PrepareComputations(ray, intersections)
+	comp := PrepareComputations(intersection, ray, intersections)
 	for _, light := range w.lights {
 		shade := 1.0
 		shadowVector := light.Position.Subtract(comp.OverPoint)

@@ -26,23 +26,23 @@ func MakeCube() *Cube {
 }
 
 // Intersect Check for intersection along one of the six sides of the cube
-func (c *Cube) Intersect(r primitives.Ray) []float64 {
+func (c *Cube) Intersect(r primitives.Ray) Intersections {
 	// convert ray to object space
-	ray2 := r.Transform(c.Inverse())
-	xtmin, xtmax := checkAxis(ray2.Origin.X, ray2.Direction.X)
-	ytmin, ytmax := checkAxis(ray2.Origin.Y, ray2.Direction.Y)
-	ztmin, ztmax := checkAxis(ray2.Origin.Z, ray2.Direction.Z)
+	oray := r.Transform(c.Inverse())
+	xtmin, xtmax := checkAxis(oray.Origin.X, oray.Direction.X)
+	ytmin, ytmax := checkAxis(oray.Origin.Y, oray.Direction.Y)
+	ztmin, ztmax := checkAxis(oray.Origin.Z, oray.Direction.Z)
 	tmin := math.Max(math.Max(xtmin, ytmin), ztmin)
 	tmax := math.Min(math.Min(xtmax, ytmax), ztmax)
 	if tmin > tmax {
-		return []float64{}
+		return Intersections{}
 	}
-	return []float64{tmin, tmax}
+	return Intersections{Intersection{Distance:tmin, Obj:c}, Intersection{Distance:tmax, Obj:c}}
 }
 
 // Normal Calculate the normal at a given point on the cube
 func (c *Cube) Normal(worldPoint primitives.PV) primitives.PV {
-	objectPoint := worldPoint.Transform(c.Inverse())
+	objectPoint := c.WorldToObjectPV(worldPoint)
 	absx := math.Abs(objectPoint.X)
 	absy := math.Abs(objectPoint.Y)
 	absz := math.Abs(objectPoint.Z)
@@ -55,7 +55,7 @@ func (c *Cube) Normal(worldPoint primitives.PV) primitives.PV {
 	} else {
 		objectNormal = primitives.MakeVector(0, 0, objectPoint.Z)
 	}
-	worldNormal := objectNormal.Transform(c.Inverse().Transpose())
+	worldNormal := c.ObjectToWorldPV(objectNormal)
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
 }
