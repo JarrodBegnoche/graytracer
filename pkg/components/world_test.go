@@ -338,3 +338,78 @@ func TestSchlick(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkNoBoundingBoxes(b *testing.B) {
+	world := components.World{}
+	light := components.PointLight{Intensity: patterns.MakeRGB(1, 1, 1),
+		Position: primitives.MakePoint(-30, 60, -30)}
+	world.AddLight(light)
+	for x := 0.0; x < 16; x++ {
+		for y := 0.0; y < 16; y++ {
+			for z := 0.0; z < 16; z++ {
+				sphere := shapes.MakeSphere()
+				sphere.SetTransform(primitives.Translation(x * 4, y * 4, z * 4))
+				world.AddObject(sphere)
+			}
+		}
+	}
+	ray := primitives.Ray{Origin:primitives.MakePoint(4, 4, -5), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = world.ColorAt(ray, 5)
+	}
+}
+
+func Benchmark8BoundingBoxes(b *testing.B) {
+	world := components.World{}
+	light := components.PointLight{Intensity: patterns.MakeRGB(1, 1, 1),
+		Position: primitives.MakePoint(-30, 60, -30)}
+	world.AddLight(light)
+	var groups [8]*shapes.Group
+	for index := 0; index < 8; index++ {
+		groups[index] = shapes.MakeGroup()
+		world.AddObject(groups[index])
+	}
+	for x := 0.0; x < 16; x++ {
+		for y := 0.0; y < 16; y++ {
+			for z := 0.0; z < 16; z++ {
+				sphere := shapes.MakeSphere()
+				sphere.SetTransform(primitives.Translation(x * 4, y * 4, z * 4))
+				group_no := (int(x / 8) * 4) + (int(y / 8) * 2) + (int(z / 8))
+				groups[group_no].AddShape(sphere)
+			}
+		}
+	}
+	ray := primitives.Ray{Origin:primitives.MakePoint(4, 4, -5), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = world.ColorAt(ray, 5)
+	}
+}
+
+func Benchmark64BoundingBoxes(b * testing.B) {
+	world := components.World{}
+	light := components.PointLight{Intensity: patterns.MakeRGB(1, 1, 1),
+		Position: primitives.MakePoint(-30, 60, -30)}
+	world.AddLight(light)
+	var groups [64]*shapes.Group
+	for index := 0; index < 64; index++ {
+		groups[index] = shapes.MakeGroup()
+		world.AddObject(groups[index])
+	}
+	for x := 0.0; x < 16; x++ {
+		for y := 0.0; y < 16; y++ {
+			for z := 0.0; z < 16; z++ {
+				sphere := shapes.MakeSphere()
+				sphere.SetTransform(primitives.Translation(x * 4, y * 4, z * 4))
+				group_no := (int(x / 4) * 16) + (int(y / 4) * 4) + (int(z / 4))
+				groups[group_no].AddShape(sphere)
+			}
+		}
+	}
+	ray := primitives.Ray{Origin:primitives.MakePoint(4, 4, -5), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = world.ColorAt(ray, 5)
+	}
+}

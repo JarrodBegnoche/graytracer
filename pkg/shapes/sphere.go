@@ -15,6 +15,12 @@ func MakeSphere() *Sphere {
 	return &Sphere{MakeShapeBase()}
 }
 
+// GetBounds Return an axis aligned bounding box for the sphere
+func (s *Sphere) GetBounds() *Bounds {
+	bounds := &Bounds{Min:primitives.MakePoint(-1, -1, -1), Max:primitives.MakePoint(1, 1, 1)}
+	return bounds.Transform(s.transform)
+}
+
 // Intersect Check if a ray intersects
 func (s *Sphere) Intersect(r primitives.Ray) Intersections {
 	hits := Intersections{}

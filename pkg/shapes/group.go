@@ -8,26 +8,42 @@ import (
 type Group struct {
 	ShapeBase
 	shapes []Shape
+	bounds *Bounds
 }
 
 // MakeGroup Make an empty set of shapes
 func MakeGroup() *Group {
-	return &Group{MakeShapeBase(), []Shape{}}
+	return &Group{MakeShapeBase(), []Shape{}, nil}
+}
+
+// GetBounds Return an axis aligned bounding box for the sphere
+func (g *Group) GetBounds() *Bounds {
+	return g.bounds
 }
 
 // AddShape Add a shape to the group and set its parent
 func (g *Group) AddShape(shape Shape) {
 	g.shapes = append(g.shapes, shape)
 	shape.SetParent(g)
+	bounds := shape.GetBounds()
+	if (bounds != nil) {
+		if (g.bounds == nil) {
+			g.bounds = bounds.Transform(g.transform)
+		} else {
+			g.bounds.AddBounds(bounds.Transform(g.transform))
+		}
+	}
 }
 
 // Intersect Check if a ray intersects
 func (g *Group) Intersect(r primitives.Ray) Intersections {
 	hits := Intersections{}
-	// convert ray to object space
-	oray := r.Transform(g.inverse)
-	for _, shape := range g.shapes {
-		hits = append(hits, shape.Intersect(oray)...)
+	if ((g.bounds == nil) || (g.bounds.Intersect(r))) {
+		// convert ray to object space
+		oray := r.Transform(g.inverse)
+		for _, shape := range g.shapes {
+			hits = append(hits, shape.Intersect(oray)...)
+		}
 	}
 	return hits
 }
