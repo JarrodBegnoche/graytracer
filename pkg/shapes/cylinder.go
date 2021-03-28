@@ -16,6 +16,12 @@ func MakeCylinder(closed bool) *Cylinder {
 	return &Cylinder{MakeShapeBase(), closed}
 }
 
+// GetBounds Return an axis aligned bounding box for the sphere
+func (cyl *Cylinder) GetBounds() *Bounds {
+	bounds := &Bounds{Min:primitives.MakePoint(-1, 0, -1), Max:primitives.MakePoint(1, 1, 1)}
+	return bounds.Transform(cyl.transform)
+}
+
 // Intersect Check if a ray intersects
 func (cyl *Cylinder) Intersect(r primitives.Ray) Intersections {
 	hits := Intersections{}

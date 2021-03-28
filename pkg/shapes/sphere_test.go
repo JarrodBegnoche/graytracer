@@ -7,6 +7,32 @@ import (
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
+func TestSphereGetBounds(t *testing.T) {
+	tables := []struct {
+		sphere *shapes.Sphere
+		transform primitives.Matrix
+		min, max primitives.PV
+	}{
+		{shapes.MakeSphere(),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-1, -1, -1), primitives.MakePoint(1, 1, 1)},
+
+		{shapes.MakeSphere(),
+		 primitives.Scaling(2, 3, 4),
+		 primitives.MakePoint(-2, -3, -4), primitives.MakePoint(2, 3, 4)},
+	}
+	for _, table := range tables {
+		table.sphere.SetTransform(table.transform)
+		bounds := table.sphere.GetBounds()
+		if !bounds.Min.Equals(table.min) {
+			t.Errorf("Expected Minimum %v, got %v", table.min, bounds.Min)
+		}
+		if !bounds.Max.Equals(table.max) {
+			t.Errorf("Expected Maximum %v, got %v", table.max, bounds.Max)
+		}
+	}
+}
+
 func TestSphereIntersection(t *testing.T) {
 	tables := []struct {
 		s *shapes.Sphere
@@ -63,5 +89,25 @@ func TestSphereNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
+	}
+}
+
+func BenchmarkSphereIntersection(b *testing.B) {
+	sphere := shapes.MakeSphere()
+	sphere.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		sphere.Intersect(ray)
+	}
+}
+
+func BenchmarkSphereNormal(b *testing.B) {
+	sphere := shapes.MakeSphere()
+	sphere.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
+	point := primitives.MakePoint(0, 0, 0.5)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		sphere.Normal(point)
 	}
 }

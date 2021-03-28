@@ -85,6 +85,7 @@ type Shape interface {
 	Material() patterns.Material
 	SetParent(Shape)
 	Parent() Shape
+	GetBounds() *Bounds
 	UVMapping(primitives.PV) primitives.PV
 	WorldToObjectPV(primitives.PV) primitives.PV
 	ObjectToWorldPV(primitives.PV) primitives.PV

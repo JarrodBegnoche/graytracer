@@ -1,10 +1,39 @@
 package shapes_test
 
 import (
+	"math"
 	"testing"
 	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/shapes"
 )
+
+func TestPlaneGetBounds(t *testing.T) {
+	tables := []struct {
+		plane *shapes.Plane
+		transform primitives.Matrix
+		min, max primitives.PV
+	}{
+		{shapes.MakePlane(),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(math.Inf(-1), -primitives.EPSILON, math.Inf(-1)),
+		 primitives.MakePoint(math.Inf(1), primitives.EPSILON, math.Inf(1))},
+
+		{shapes.MakePlane(),
+		 primitives.RotationX(math.Pi / 2),
+		 primitives.MakePoint(math.Inf(-1), math.Inf(-1), -primitives.EPSILON),
+		 primitives.MakePoint(math.Inf(1), math.Inf(1), primitives.EPSILON)},
+	}
+	for _, table := range tables {
+		table.plane.SetTransform(table.transform)
+		bounds := table.plane.GetBounds()
+		if !bounds.Min.Equals(table.min) {
+			t.Errorf("Expected Minimum %v, got %v", table.min, bounds.Min)
+		}
+		if !bounds.Max.Equals(table.max) {
+			t.Errorf("Expected Maximum %v, got %v", table.max, bounds.Max)
+		}
+	}
+}
 
 func TestPlaneIntersection(t *testing.T) {
 	tables := []struct {
@@ -60,5 +89,25 @@ func TestPlaneNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
+	}
+}
+
+func BenchmarkPlaneIntersection(b *testing.B) {
+	plane := shapes.MakePlane()
+	plane.SetTransform(primitives.RotationX(math.Pi / 2))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		plane.Intersect(ray)
+	}
+}
+
+func BenchmarkPlaneNormal(b *testing.B) {
+	plane := shapes.MakePlane()
+	plane.SetTransform(primitives.RotationX(math.Pi / 2))
+	point := primitives.MakePoint(1, 1, 0)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		plane.Normal(point)
 	}
 }

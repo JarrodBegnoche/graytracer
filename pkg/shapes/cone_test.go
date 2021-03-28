@@ -6,6 +6,32 @@ import (
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
+func TestConeGetBounds(t *testing.T) {
+	tables := []struct {
+		cone *shapes.Cone
+		transform primitives.Matrix
+		min, max primitives.PV
+	}{
+		{shapes.MakeCone(false),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-1, -1, -1), primitives.MakePoint(1, 0, 1)},
+
+		{shapes.MakeCone(false),
+		 primitives.Scaling(2, 2, 2),
+		 primitives.MakePoint(-2, -2, -2), primitives.MakePoint(2, 0, 2)},
+	}
+	for _, table := range tables {
+		table.cone.SetTransform(table.transform)
+		bounds := table.cone.GetBounds()
+		if !bounds.Min.Equals(table.min) {
+			t.Errorf("Expected Minimum %v, got %v", table.min, bounds.Min)
+		}
+		if !bounds.Max.Equals(table.max) {
+			t.Errorf("Expected Maximum %v, got %v", table.max, bounds.Max)
+		}
+	}
+}
+
 func TestConeIntersection(t *testing.T) {
 	tables := []struct {
 		s *shapes.Cone
@@ -59,5 +85,25 @@ func TestConeNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
+	}
+}
+
+func BenchmarkConeIntersection(b *testing.B) {
+	cone := shapes.MakeCone(true)
+	cone.SetTransform(primitives.Translation(0, 1, 0))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cone.Intersect(ray)
+	}
+}
+
+func BenchmarkConeNormal(b *testing.B) {
+	cone := shapes.MakeCone(true)
+	cone.SetTransform(primitives.Translation(0, 1, 0))
+	point := primitives.MakePoint(0, 0.5, 0.5)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cone.Normal(point)
 	}
 }

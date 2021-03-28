@@ -16,6 +16,12 @@ func MakeCone(closed bool) *Cone {
 	return &Cone{MakeShapeBase(), closed}
 }
 
+// GetBounds Return an axis aligned bounding box for the sphere
+func (cone *Cone) GetBounds() *Bounds {
+	bounds := Bounds{Min:primitives.MakePoint(-1, -1, -1), Max:primitives.MakePoint(1, 0, 1)}
+	return bounds.Transform(cone.transform)
+}
+
 // Intersect Check if a ray intersects
 func (cone *Cone) Intersect(r primitives.Ray) Intersections {
 	hits := Intersections{}

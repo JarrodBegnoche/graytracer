@@ -10,10 +10,11 @@ type Cube struct {
 	ShapeBase
 }
 
-func checkAxis(origin, direction float64) (float64, float64) {
+// CheckAxis Checks two sides of a cube on an axis from a ray's path on that axis
+func CheckAxis(origin, direction, minimum, maximum float64) (float64, float64) {
 	// We can do just this because go handles division by zero
-	tmin := (-1 - origin) / direction
-	tmax := (1 - origin) / direction
+	tmin := (minimum - origin) / direction
+	tmax := (maximum - origin) / direction
 	if tmin > tmax {
 		tmin, tmax = tmax, tmin
 	}
@@ -25,13 +26,19 @@ func MakeCube() *Cube {
 	return &Cube{MakeShapeBase()}
 }
 
+// GetBounds Return an axis aligned bounding box for the sphere
+func (c *Cube) GetBounds() *Bounds {
+	bounds := Bounds{Min:primitives.MakePoint(-1, -1, -1), Max:primitives.MakePoint(1, 1, 1)}
+	return bounds.Transform(c.transform)
+}
+
 // Intersect Check for intersection along one of the six sides of the cube
 func (c *Cube) Intersect(r primitives.Ray) Intersections {
 	// convert ray to object space
 	oray := r.Transform(c.Inverse())
-	xtmin, xtmax := checkAxis(oray.Origin.X, oray.Direction.X)
-	ytmin, ytmax := checkAxis(oray.Origin.Y, oray.Direction.Y)
-	ztmin, ztmax := checkAxis(oray.Origin.Z, oray.Direction.Z)
+	xtmin, xtmax := CheckAxis(oray.Origin.X, oray.Direction.X, -1, 1)
+	ytmin, ytmax := CheckAxis(oray.Origin.Y, oray.Direction.Y, -1, 1)
+	ztmin, ztmax := CheckAxis(oray.Origin.Z, oray.Direction.Z, -1, 1)
 	tmin := math.Max(math.Max(xtmin, ytmin), ztmin)
 	tmax := math.Min(math.Min(xtmax, ytmax), ztmax)
 	if tmin > tmax {

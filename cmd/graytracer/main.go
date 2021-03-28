@@ -44,19 +44,57 @@ func RenderPixel() {
 	}
 }
 
+// MakeHex Make a Hex group object
+func MakeHex(mat patterns.Material, transform primitives.Matrix) shapes.Shape {
+	// Hex group
+	hex := shapes.MakeGroup()
+	hex.SetTransform(transform)
+	for i := 0.0; i < 6; i++ {
+		corner := shapes.MakeSphere()
+		corner.SetMaterial(mat)
+		corner.SetTransform(primitives.RotationY(i * math.Pi / 3).Multiply(
+							primitives.Translation(0, 0, -1).Multiply(
+							primitives.Scaling(0.25, 0.25, 0.25))))
+		edge := shapes.MakeCylinder(true)
+		edge.SetMaterial(mat)
+		edge.SetTransform(primitives.RotationY(i * math.Pi / 3).Multiply(
+						  primitives.Translation(0, 0, -1).Multiply(
+						  primitives.RotationY(-math.Pi / 6).Multiply(
+						  primitives.RotationZ(-math.Pi / 2).Multiply(
+						  primitives.Scaling(0.25, 1, 0.25))))))
+		top := shapes.MakeCone(true)
+		top.SetMaterial(mat)
+		top.SetTransform(primitives.RotationY(i * math.Pi / 3).Multiply(
+						 primitives.Translation(0, 1, 0).Multiply(
+						 primitives.RotationX(math.Pi / 4).Multiply(
+						 primitives.Scaling(0.25, math.Sqrt(2), 0.25)))))
+		bottom := shapes.MakeCone(true)
+		bottom.SetMaterial(mat)
+		bottom.SetTransform(primitives.RotationY(i * math.Pi / 3).Multiply(
+						    primitives.Translation(0, -1, 0).Multiply(
+							primitives.RotationX(3 * math.Pi / 4).Multiply(
+							primitives.Scaling(0.25, math.Sqrt(2), 0.25)))))
+		hex.AddShape(corner)
+		hex.AddShape(edge)
+		hex.AddShape(top)
+		hex.AddShape(bottom)
+	}
+	return hex
+}
+
 func main() {
 	fmt.Println("Starting render")
 	var width, height uint
 	var threads int
 	var fov float64
 	flag.IntVar(&threads, "threads", runtime.NumCPU(), "Number of threads for rendering")
-	flag.UintVar(&width, "width", 480, "Width of rendered image")
-	flag.UintVar(&height, "height", 270, "Height of rendered image")
-	flag.Float64Var(&fov, "fov", math.Pi/3, "Field of View (in Radians)")
+	flag.UintVar(&width, "width", 320, "Width of rendered image")
+	flag.UintVar(&height, "height", 240, "Height of rendered image")
+	flag.Float64Var(&fov, "fov", math.Pi/4, "Field of View (in Radians)")
 	flag.Parse()
 	camera = components.MakeCamera(width, height, fov)
-	camera.ViewTransform(primitives.MakePoint(0, 1.5, -4.5),
-						 primitives.MakePoint(0, 1, 0),
+	camera.ViewTransform(primitives.MakePoint(-20, 50, -35),
+						 primitives.MakePoint(15, 10, 15),
 						 primitives.MakeVector(0, 1, 0))
 	ch = make(chan XY, 1000)
 	imgMutex = &sync.Mutex{}
@@ -64,115 +102,27 @@ func main() {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{int(width), int(height)}
 	img = image.NewRGBA(image.Rectangle{upLeft, lowRight})
-	world = &components.World{}
-	floorMaterial := patterns.Material{Pat: patterns.MakeChecker(patterns.MakeRGB(0.05, 0.05, 0.05),
-									   							 patterns.MakeRGB(0.95, 0.95, 0.95)),
-									   Ambient: 0.1, Diffuse: 0.9, Specular: 0, Shininess: 200,
-									   Reflective: 0, Transparency: 0, RefractiveIndex: 1}
-	//floorMaterial.Pat.SetTransform(primitives.Scaling(0.25, 0, 0))
-	//floorMaterial.Pat.SetTransform(primitives.RotationZ(math.Pi / 2))
-	// Floor
-	floor := shapes.MakePlane()
-	floor.SetMaterial(floorMaterial)
-	world.AddObject(floor)
-	ceiling := shapes.MakePlane()
-	ceiling.SetMaterial(floorMaterial)
-	ceiling.SetTransform(primitives.Translation(0, 10, 0).Multiply(primitives.RotationX(math.Pi)))
-	world.AddObject(ceiling)
-	frontWall := shapes.MakePlane()
-	frontWall.SetMaterial(floorMaterial)
-	frontWall.SetTransform(primitives.Translation(0, 0, 5).Multiply(primitives.RotationX(math.Pi / 2)))
-	world.AddObject(frontWall)
-	backWall := shapes.MakePlane()
-	backWall.SetMaterial(floorMaterial)
-	backWall.SetTransform(primitives.Translation(0, 0, -5).Multiply(primitives.RotationX(-math.Pi / 2)))
-	world.AddObject(backWall)
-	leftWall := shapes.MakePlane()
-	leftWall.SetMaterial(floorMaterial)
-	leftWall.SetTransform(primitives.Translation(-5, 0, 0).Multiply(primitives.RotationZ(-math.Pi / 2)))
-	world.AddObject(leftWall)
-	rightWall := shapes.MakePlane()
-	rightWall.SetMaterial(floorMaterial)
-	rightWall.SetTransform(primitives.Translation(5, 0, 0).Multiply(primitives.RotationZ(math.Pi / 2)))
-	world.AddObject(rightWall)
-	// Sphere
-	sphere := shapes.MakeSphere()
-	gradStripe := patterns.MakeStripe(patterns.MakeGradient(patterns.MakeRGB(0.1, 1, 0.1),
-									  						patterns.MakeRGB(0.9, 0.1, 0.1)),
-									  patterns.MakeGradient(patterns.MakeRGB(0.9, 0.1, 0.1),
-															patterns.MakeRGB(0.1, 1, 0.1)))
-	gradStripe.SetTransform(primitives.Scaling(0.125, 0.125, 0))
-	sphere.SetTransform(primitives.Translation(-1, 1, 2))
-	sphere.SetMaterial(patterns.Material{Pat: gradStripe, Ambient: 0.1, Diffuse: 0.7, Specular: 0.3,
-										 Shininess: 20, Reflective: 0, Transparency: 0, RefractiveIndex: 1})
-	world.AddObject(sphere)
-	// Cylinder
-	cylinder := shapes.MakeCylinder(true)
-	cylinder.SetTransform(primitives.Translation(1, 0.25, 1).Multiply(
-						  primitives.RotationY(math.Pi / 4).Multiply(
-						  primitives.RotationX(math.Pi / 2).Multiply(
-						  primitives.Scaling(0.25, 2, 0.25)))))
-	cylinder.SetMaterial(patterns.Material{Pat: patterns.MakeRGB(0.1, 0.1, 0.5),
-										   Ambient: 0.1, Diffuse: 0.7, Specular: 0.3,
-										   Shininess: 200, Reflective: 1, Transparency: 0, RefractiveIndex: 1})
-	world.AddObject(cylinder)
-	// Cube
-	cube := shapes.MakeCube()
-	cube.SetTransform(primitives.Translation(-2, 0.500001, 0.25).Multiply(
-		              primitives.RotationY(math.Pi / 6).Multiply(
-			          primitives.Scaling(0.5, 0.5, 0.5))))
-	cube.SetMaterial(patterns.Material{Pat: patterns.MakeRGB(0.05, 0.05, 0.05), Ambient: 0.1,
-		                               Diffuse: 0.7, Specular: 0.7, Shininess: 200, Reflective: 0.1,
-									   Transparency: 0.9, RefractiveIndex: 1.52})
-	world.AddObject(cube)
-	// Cone
-	cone := shapes.MakeCone(false)
-	stripe := patterns.MakeStripe(patterns.MakeRGB(0.9, 0, 0.9), patterns.MakeRGB(0.05, 0.05, 0.05))
-	stripe.SetTransform(primitives.Scaling(0.0625, 0, 0))
-	cone.SetTransform(primitives.Translation(2, 1, 0).Multiply(
-					  primitives.Scaling(0.5, 1, 0.5)))
-	cone.SetMaterial(patterns.Material{Pat: stripe, Ambient: 0.1, Diffuse: 0.7, Specular: 0.5,
-									   Shininess: 200, Reflective: 0.1, Transparency: 0, RefractiveIndex: 0})
-	world.AddObject(cone)
-	// Hex group
-	hex := shapes.MakeGroup()
-	hex.SetTransform(primitives.Translation(0, 1, -0.5).Multiply(
-					 primitives.RotationY(math.Pi / 4).Multiply(
-					 primitives.Scaling(0.75, 0.75, 0.75))))
-	hexMat := patterns.Material{Pat: patterns.MakeRGB(0.0, 0.8, 0.8), Ambient: 0.1, Diffuse: 0.7, Specular: 0.7,
-								Shininess: 200, Reflective: 0.1, Transparency: 0, RefractiveIndex: 0}
-	for i := 0.0; i < 6; i++ {
-		corner := shapes.MakeSphere()
-		corner.SetMaterial(hexMat)
-		corner.SetTransform(primitives.Translation(0, 0, -1).Multiply(
-							primitives.Scaling(0.25, 0.25, 0.25)))
-		edge := shapes.MakeCylinder(true)
-		edge.SetMaterial(hexMat)
-		edge.SetTransform(primitives.Translation(0, 0, -1).Multiply(
-						  primitives.RotationY(-math.Pi / 6).Multiply(
-						  primitives.RotationZ(-math.Pi / 2).Multiply(
-						  primitives.Scaling(0.25, 1, 0.25)))))
-		top := shapes.MakeCone(true)
-		top.SetMaterial(hexMat)
-		top.SetTransform(primitives.Translation(0, 1, 0).Multiply(
-						 primitives.RotationX(math.Pi / 4).Multiply(
-						 primitives.Scaling(0.25, math.Sqrt(2), 0.25))))
-		bottom := shapes.MakeCone(true)
-		bottom.SetMaterial(hexMat)
-		bottom.SetTransform(primitives.Translation(0, -1, 0).Multiply(
-			 				primitives.RotationX(3 * math.Pi / 4).Multiply(
-							primitives.Scaling(0.25, math.Sqrt(2), 0.25))))
-		side := shapes.MakeGroup()
-		side.SetTransform(primitives.RotationY(i * math.Pi / 3))
-		side.AddShape(corner)
-		side.AddShape(edge)
-		side.AddShape(top)
-		side.AddShape(bottom)
-		hex.AddShape(side)
+	world = components.MakeWorld()
+	world.SetBackground(*patterns.MakeRGB(0.9, 0.9, 0.9))
+	for x := 0.0; x < 10; x++ {
+		for y := 0.0; y < 10; y++ {
+			for z := 0.0; z < 10; z++ {
+				mat := patterns.Material{Pat: patterns.MakeRGB(x * 0.1, y * 0.1, z * 0.1),
+										 Ambient: 0.1, Diffuse: 0.7, Specular: 0.5,
+										 Shininess: 200, Reflective: 0.1, Transparency: 0, RefractiveIndex: 0}
+				hex := MakeHex(mat, primitives.Translation(x * 4, y * 3, z * 4))
+				world.AddObject(hex)
+			}
+		}
 	}
-	world.AddObject(hex)
+	
+	// Render time without bounding boxes
+	// Render finished : 1m34.8119446s
+	// Render time with bounding boxes
+	// Render finished : 2.4859576s
+
 	light := components.PointLight{Intensity: patterns.MakeRGB(1, 1, 1),
-		Position: primitives.MakePoint(-4.5, 4.5, -4.5)}
+		Position: primitives.MakePoint(-30, 60, -30)}
 	world.AddLight(light)
 	fmt.Println("Creating goroutines")
 	wg.Add(threads)

@@ -6,6 +6,32 @@ import (
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
+func TestCylinderGetBounds(t *testing.T) {
+	tables := []struct {
+		cylinder *shapes.Cylinder
+		transform primitives.Matrix
+		min, max primitives.PV
+	}{
+		{shapes.MakeCylinder(false),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-1, 0, -1), primitives.MakePoint(1, 1, 1)},
+
+		{shapes.MakeCylinder(false),
+		 primitives.Scaling(4, 3, 2),
+		 primitives.MakePoint(-4, 0, -2), primitives.MakePoint(4, 3, 2)},
+	}
+	for _, table := range tables {
+		table.cylinder.SetTransform(table.transform)
+		bounds := table.cylinder.GetBounds()
+		if !bounds.Min.Equals(table.min) {
+			t.Errorf("Expected Minimum %v, got %v", table.min, bounds.Min)
+		}
+		if !bounds.Max.Equals(table.max) {
+			t.Errorf("Expected Maximum %v, got %v", table.max, bounds.Max)
+		}
+	}
+}
+
 func TestCylinderIntersection(t *testing.T) {
 	tables := []struct {
 		s *shapes.Cylinder
@@ -146,5 +172,25 @@ func TestCylinderNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
+	}
+}
+
+func BenchmarkCylinderIntersection(b *testing.B) {
+	cylinder := shapes.MakeCylinder(true)
+	cylinder.SetTransform(primitives.Scaling(0.5, 1, 0.5))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cylinder.Intersect(ray)
+	}
+}
+
+func BenchmarkCylinderNormal(b *testing.B) {
+	cylinder := shapes.MakeCylinder(true)
+	cylinder.SetTransform(primitives.Scaling(0.5, 1, 0.5))
+	point := primitives.MakePoint(0, 0.5, 0.5)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cylinder.Normal(point)
 	}
 }

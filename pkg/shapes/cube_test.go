@@ -7,6 +7,32 @@ import (
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
+func TestCubeGetBounds(t *testing.T) {
+	tables := []struct {
+		cube *shapes.Cube
+		transform primitives.Matrix
+		min, max primitives.PV
+	}{
+		{shapes.MakeCube(),
+		 primitives.MakeIdentityMatrix(4),
+		 primitives.MakePoint(-1, -1, -1), primitives.MakePoint(1, 1, 1)},
+
+		{shapes.MakeCube(),
+		 primitives.Scaling(2, 3, 4),
+		 primitives.MakePoint(-2, -3, -4), primitives.MakePoint(2, 3, 4)},
+	}
+	for _, table := range tables {
+		table.cube.SetTransform(table.transform)
+		bounds := table.cube.GetBounds()
+		if !bounds.Min.Equals(table.min) {
+			t.Errorf("Expected Minimum %v, got %v", table.min, bounds.Min)
+		}
+		if !bounds.Max.Equals(table.max) {
+			t.Errorf("Expected Maximum %v, got %v", table.max, bounds.Max)
+		}
+	}
+}
+
 func TestCubeIntersection(t *testing.T) {
 	tables := []struct {
 		c *shapes.Cube
@@ -91,5 +117,25 @@ func TestCubeNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
+	}
+}
+
+func BenchmarkCubeIntersection(b *testing.B) {
+	cube := shapes.MakeCube()
+	cube.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cube.Intersect(ray)
+	}
+}
+
+func BenchmarkCubeNormal(b *testing.B) {
+	cube := shapes.MakeCube()
+	cube.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
+	point := primitives.MakePoint(0, 0, 0.5)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cube.Normal(point)
 	}
 }

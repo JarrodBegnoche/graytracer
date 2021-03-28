@@ -12,6 +12,12 @@ import (
 type World struct {
 	objects []shapes.Shape
 	lights []PointLight
+	background patterns.RGB
+}
+
+// MakeWorld Make an empty world and a black background
+func MakeWorld() *World {
+	return &World{objects: []shapes.Shape{}, lights: []PointLight{}, background: *patterns.MakeRGB(0, 0, 0)}
 }
 
 // AddObject Add a shape object to the world
@@ -22,6 +28,11 @@ func (w *World) AddObject(shape shapes.Shape) {
 // AddLight Add a light object to the world
 func (w *World) AddLight(light PointLight) {
 	w.lights = append(w.lights, light)
+}
+
+// SetBackground Set the background color
+func (w *World) SetBackground(color patterns.RGB) {
+	w.background = color
 }
 
 // Intersect Calculate the intersections from the ray to world objects
@@ -72,7 +83,7 @@ func (w World) ColorAt(ray primitives.Ray, remaining int) patterns.RGB {
 	intersections := w.Intersect(ray)
 	intersection, hit := intersections.Hit()
 	if !hit {
-		return surface
+		return w.background
 	}
 	comp := PrepareComputations(intersection, ray, intersections)
 	for _, light := range w.lights {

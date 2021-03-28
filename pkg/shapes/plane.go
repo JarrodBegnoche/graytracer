@@ -15,6 +15,13 @@ func MakePlane() *Plane {
 	return &Plane{MakeShapeBase()}
 }
 
+// GetBounds Return an axis aligned bounding box for the sphere
+func (p *Plane) GetBounds() *Bounds {
+	bounds := &Bounds{Min:primitives.MakePoint(math.Inf(-1), -primitives.EPSILON, math.Inf(-1)),
+					  Max:primitives.MakePoint(math.Inf(1), primitives.EPSILON, math.Inf(1))}
+	return bounds.Transform(p.transform)
+}
+
 // Intersect Check if a ray intersects
 func (p *Plane) Intersect(r primitives.Ray) Intersections {
 	hits := Intersections{}
