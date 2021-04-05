@@ -47,7 +47,7 @@ func TestMatrixEquals(t *testing.T) {
 	}
 }
 
-func TestSubmatrix(t * testing.T) {
+func TestSubmatrix(t *testing.T) {
 	tables := []struct {
 		matrix primitives.Matrix
 		row uint8
@@ -67,6 +67,14 @@ func TestSubmatrix(t * testing.T) {
 	}
 }
 
+func BenchmarkSubmatrix4x4(b *testing.B) {
+	matrix := primitives.Matrix{{-6, 1, 1, 6}, {-8, 5, 8, 6}, {-1, 0, 8, 2}, {-7, 1, -1, 1}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix.Submatrix(2, 1)
+	}
+}
+
 func TestMatrixMultiply(t *testing.T) {
 	tables := []struct {
 		matrix1, matrix2, product primitives.Matrix
@@ -82,6 +90,15 @@ func TestMatrixMultiply(t *testing.T) {
 		if !product.Equals(table.product) {
 			t.Errorf("Expected %v, got %v", table.product, product)
 		}
+	}
+}
+
+func BenchmarkMatrixMultiply(b *testing.B) {
+	matrix1 := primitives.Matrix{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 8, 7, 6}, {5, 4, 3, 2}}
+	matrix2 := primitives.Matrix{{-2, 1, 2, 3}, {3, 2, 1, -1}, {4, 3, 6, 5}, {1, 2, 7, 8}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix1.Multiply(matrix2)
 	}
 }
 
@@ -119,6 +136,14 @@ func TestMatrixDeterminant(t *testing.T) {
 	}
 }
 
+func BenchmarkMatrixDeterminant4x4(b *testing.B) {
+	matrix := primitives.Matrix{{-2, -8, 3, 5}, {-3, 1, 7, 3}, {1, 2, -9, 6}, {-6, 7, 7, -9}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix.Determinant()
+	}
+}
+
 func TestMatrixMinor(t *testing.T) {
 	tables := []struct {
 		matrix1 primitives.Matrix
@@ -136,6 +161,14 @@ func TestMatrixMinor(t *testing.T) {
 	}
 }
 
+func BenchmarkMatrixMinor3x3(b *testing.B) {
+	matrix := primitives.Matrix{{3, 5, 0}, {2, -1, -7}, {6, -1, 5}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix.Minor(1, 0)
+	}
+}
+
 func TestMatrixCofactor(t *testing.T) {
 	tables := []struct {
 		matrix1 primitives.Matrix
@@ -150,6 +183,14 @@ func TestMatrixCofactor(t *testing.T) {
 		if cofactor != table.cofactor {
 			t.Errorf("Expected %v, got %v", table.cofactor, cofactor)
 		}
+	}
+}
+
+func BenchmarkMatrixCofactor3x3(b *testing.B) {
+	matrix := primitives.Matrix{{3, 5, 0}, {2, -1, -7}, {6, -1, 5}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix.Cofactor(0, 0)
 	}
 }
 
@@ -196,7 +237,14 @@ func TestMatrixInverse(t *testing.T) {
 	}
 }
 
-//Test
+func BenchmarkMatrixInverse4x4(b *testing.B) {
+	matrix := primitives.Matrix{{-5, 2, 6, -8}, {1, -5, 1, 8}, {7, 7, -6, -7}, {1, -3, 7, 4}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix.Inverse()
+	}
+}
+
 func TestMatrixProcess(t *testing.T) {
 	tables := []struct {
 		matrix1, matrix2 primitives.Matrix

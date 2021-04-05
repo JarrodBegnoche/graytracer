@@ -80,6 +80,15 @@ func TestPVTransform(t *testing.T) {
 	}
 }
 
+func BenchmarkPVTransform(b *testing.B) {
+	point := primitives.MakePoint(1, 2, 3)
+	transform := primitives.Translation(5, 6, 7)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		point.Transform(transform)
+	}
+}
+
 func TestPVNegate(t *testing.T) {
 	tables := []struct {
 		v, n primitives.PV
@@ -175,7 +184,7 @@ func TestCrossProduct(t *testing.T) {
 	}
 }
 
-func TestReflect(t *testing.T) {
+func TestPVReflect(t *testing.T) {
 	tables := []struct {
 		start, normal, reflect primitives.PV
 	}{
@@ -187,5 +196,14 @@ func TestReflect(t *testing.T) {
 		if !reflect.Equals(table.reflect) {
 			t.Errorf("Expect %v, got %v", table.reflect, reflect)
 		}
+	}
+}
+
+func BenchmarkPVReflect(b *testing.B) {
+	vector := primitives.MakeVector(1, -1, 0)
+	normal := primitives.MakeVector(0, 1, 0)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		vector.Reflect(normal)
 	}
 }

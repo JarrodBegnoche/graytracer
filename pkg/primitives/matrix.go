@@ -130,7 +130,7 @@ func (m Matrix) Cofactor(row, column uint8) float64 {
 func (m Matrix) Inverse() (Matrix, error) {
 	determinant := m.Determinant()
 	if determinant == 0 {
-		return nil, errors.New("Not invertible")
+		return nil, errors.New("not invertible")
 	}
 	size := uint8(len(m))
 	inverse := MakeMatrix(size)

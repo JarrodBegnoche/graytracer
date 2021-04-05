@@ -19,7 +19,8 @@ Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Bu
 - ✅ Chapter 13: [Cylinders and Cones](https://user-images.githubusercontent.com/40322086/108651820-98a51380-7490-11eb-8519-c72a496c025c.png)
 - ✅ Chapter 14: [Groups](https://user-images.githubusercontent.com/40322086/110737622-b5b14480-81fb-11eb-8b70-ff4517a84bac.png)
 - ✅ Chapter 14.5: [Bounding Boxes](https://user-images.githubusercontent.com/40322086/112742776-6e4ae800-8f5f-11eb-8a4e-66a5d145fc3f.png)
-- Chapter 15: Triangles
+- Chapter 15: [Triangles](https://user-images.githubusercontent.com/40322086/113527126-8be50680-958a-11eb-8521-6a738a7189c3.png)
+- Chapter 15.5: OBJ files
 - Chapter 16: Constructive Solid Geometry
 
 ## Latest Render
@@ -28,22 +29,28 @@ Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Bu
 
 ## Benchmark stats
 
-### Benchmarks of different bounding box setups with 4096 spheres
+### Benchmarks of primitives calculation
 
-pkg: github.com/factorion/graytracer/pkg/components
+pkg: github.com/factorion/graytracer/pkg/primitives
 cpu: AMD Ryzen 7 2700 Eight-Core Processor
 | Function | Iterations | Speed | Memory | Allocations |
-| -------- | ---------- | ----- | ------ | ----------- |
-| BenchmarkNoBoundingBoxes-16 | 1711 | 614977 ns/op | 5960 B/op | 113 allocs/op |
-| Benchmark8BoundingBoxes-16 | 10000 | 117799 ns/op | 7336 B/op | 124 allocs/op |
-| Benchmark64BoundingBoxes-16 | 32006 | 37650 ns/op | 7432 B/op | 129 allocs/op |
+| -------- | ---------: | ----: | -----: | ----------: |      
+| BenchmarkSubmatrix4x4-16 | 5329711 | 223.5 ns/op | 152 B/op | 4 allocs/op |
+| BenchmarkMatrixMultiply-16 | 3388286 | 357.6 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkMatrixDeterminant4x4-16 | 387013 | 3099 ns/op | 1568 B/op | 52 allocs/op |
+| BenchmarkMatrixMinor3x3-16 | 7517265 | 160.8 ns/op | 80 B/op | 3 allocs/op |
+| BenchmarkMatrixCofactor3x3-16 | 7162288 | 168.5 ns/op | 80 B/op | 3 allocs/op |
+| BenchmarkMatrixInverse4x4-16 | 74745 | 16077 ns/op | 8064 B/op | 265 allocs/op |
+| BenchmarkPVTransform-16 | 131638082 | 9.265 ns/op | 0 B/op | 0 allocs/op |
+| BenchmarkPVReflect-16 | 178992032 | 6.959 ns/op | 0 B/op | 0 allocs/op |
+| BenchmarkRayTransform-16 | 37492969 | 32.03 ns/op | 0 B/op | 0 allocs/op |
 
 ### Benchmarks of basic shape calculations
 
 pkg: github.com/factorion/graytracer/pkg/shapes
-cpu: AMD Ryzen 7 2700 Eight-Core Processor          
+cpu: AMD Ryzen 7 2700 Eight-Core Processor
 | Function | Iterations | Speed | Memory | Allocations |
-| -------- | ---------- | ----- | ------ | ----------- |
+| -------- | ---------: | ----: | -----: | ----------: |
 | BenchmarkConeIntersection-16 | 5701870 | 207.7 ns/op | 72 B/op | 2 allocs/op |
 | BenchmarkConeNormal-16 | 3989524 | 305.8 ns/op | 224 B/op | 5 allocs/op |
 | BenchmarkCubeIntersection-16 | 9322422 | 130.6 ns/op | 48 B/op | 1 allocs/op |
@@ -54,3 +61,15 @@ cpu: AMD Ryzen 7 2700 Eight-Core Processor
 | BenchmarkPlaneNormal-16 | 4438746 | 273.1 ns/op | 224 B/op | 5 allocs/op |
 | BenchmarkSphereIntersection-16 | 6149660 | 200.8 ns/op | 72 B/op | 2 allocs/op |
 | BenchmarkSphereNormal-16 | 3968947 | 300.2 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkTriangleIntersection-16 | 11317957 | 107.5 ns/op | 24 B/op | 1 allocs/op |
+| BenchmarkTriangleNormal-16 | 4596672 | 266.7 ns/op | 224 B/op | 5 allocs/op |
+
+### Benchmarks of different bounding box setups with 4096 spheres
+
+pkg: github.com/factorion/graytracer/pkg/components
+cpu: AMD Ryzen 7 2700 Eight-Core Processor
+| Function | Iterations | Speed | Memory | Allocations |
+| -------- | ---------: | ----: | -----: | ----------: |
+| BenchmarkNoBoundingBoxes-16 | 1711 | 614977 ns/op | 5960 B/op | 113 allocs/op |
+| Benchmark8BoundingBoxes-16 | 10000 | 117799 ns/op | 7336 B/op | 124 allocs/op |
+| Benchmark64BoundingBoxes-16 | 32006 | 37650 ns/op | 7432 B/op | 129 allocs/op |

@@ -67,6 +67,16 @@ func TestPlaneIntersection(t *testing.T) {
 	}
 }
 
+func BenchmarkPlaneIntersection(b *testing.B) {
+	plane := shapes.MakePlane()
+	plane.SetTransform(primitives.RotationX(math.Pi / 2))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		plane.Intersect(ray)
+	}
+}
+
 func TestPlaneNormal(t *testing.T) {
 	tables := []struct {
 		p *shapes.Plane
@@ -89,16 +99,6 @@ func TestPlaneNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
-	}
-}
-
-func BenchmarkPlaneIntersection(b *testing.B) {
-	plane := shapes.MakePlane()
-	plane.SetTransform(primitives.RotationX(math.Pi / 2))
-	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		plane.Intersect(ray)
 	}
 }
 

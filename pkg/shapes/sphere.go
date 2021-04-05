@@ -5,7 +5,7 @@ import (
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
-// Sphere Represents a sphere
+// Sphere Represents a sphere of radius 1
 type Sphere struct {
 	ShapeBase
 }
