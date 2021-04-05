@@ -81,6 +81,16 @@ func TestCubeIntersection(t *testing.T) {
 	}
 }
 
+func BenchmarkCubeIntersection(b *testing.B) {
+	cube := shapes.MakeCube()
+	cube.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cube.Intersect(ray)
+	}
+}
+
 func TestCubeNormal(t *testing.T) {
 	tables := []struct {
 		c *shapes.Cube
@@ -117,16 +127,6 @@ func TestCubeNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
-	}
-}
-
-func BenchmarkCubeIntersection(b *testing.B) {
-	cube := shapes.MakeCube()
-	cube.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
-	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		cube.Intersect(ray)
 	}
 }
 

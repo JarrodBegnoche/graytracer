@@ -65,6 +65,16 @@ func TestConeIntersection(t *testing.T) {
 	}
 }
 
+func BenchmarkConeIntersection(b *testing.B) {
+	cone := shapes.MakeCone(true)
+	cone.SetTransform(primitives.Translation(0, 1, 0))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cone.Intersect(ray)
+	}
+}
+
 func TestConeNormal(t *testing.T) {
 	tables := []struct {
 		c *shapes.Cone
@@ -85,16 +95,6 @@ func TestConeNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
-	}
-}
-
-func BenchmarkConeIntersection(b *testing.B) {
-	cone := shapes.MakeCone(true)
-	cone.SetTransform(primitives.Translation(0, 1, 0))
-	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		cone.Intersect(ray)
 	}
 }
 

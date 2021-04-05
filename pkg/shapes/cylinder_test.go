@@ -118,6 +118,16 @@ func TestCylinderIntersection(t *testing.T) {
 	}
 }
 
+func BenchmarkCylinderIntersection(b *testing.B) {
+	cylinder := shapes.MakeCylinder(true)
+	cylinder.SetTransform(primitives.Scaling(0.5, 1, 0.5))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cylinder.Intersect(ray)
+	}
+}
+
 func TestCylinderNormal(t *testing.T) {
 	tables := []struct {
 		c *shapes.Cylinder
@@ -172,16 +182,6 @@ func TestCylinderNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
-	}
-}
-
-func BenchmarkCylinderIntersection(b *testing.B) {
-	cylinder := shapes.MakeCylinder(true)
-	cylinder.SetTransform(primitives.Scaling(0.5, 1, 0.5))
-	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0.5, -2), Direction:primitives.MakeVector(0, 0, 1)}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		cylinder.Intersect(ray)
 	}
 }
 

@@ -69,6 +69,16 @@ func TestSphereIntersection(t *testing.T) {
 	}
 }
 
+func BenchmarkSphereIntersection(b *testing.B) {
+	sphere := shapes.MakeSphere()
+	sphere.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
+	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		sphere.Intersect(ray)
+	}
+}
+
 func TestSphereNormal(t *testing.T) {
 	tables := []struct {
 		s *shapes.Sphere
@@ -89,16 +99,6 @@ func TestSphereNormal(t *testing.T) {
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
-	}
-}
-
-func BenchmarkSphereIntersection(b *testing.B) {
-	sphere := shapes.MakeSphere()
-	sphere.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
-	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sphere.Intersect(ray)
 	}
 }
 

@@ -69,3 +69,12 @@ func TestRayTransform(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkRayTransform(b *testing.B) {
+	ray := primitives.Ray{primitives.MakePoint(1, 2, 3), primitives.MakeVector(0, 1, 0)}
+	transform := primitives.Translation(3, 4, 5)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ray.Transform(transform)
+	}
+}
