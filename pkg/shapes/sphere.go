@@ -2,6 +2,7 @@ package shapes
 
 import (
 	"math"
+
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
@@ -17,7 +18,7 @@ func MakeSphere() *Sphere {
 
 // GetBounds Return an axis aligned bounding box for the sphere
 func (s *Sphere) GetBounds() *Bounds {
-	bounds := &Bounds{Min:primitives.MakePoint(-1, -1, -1), Max:primitives.MakePoint(1, 1, 1)}
+	bounds := &Bounds{Min: primitives.MakePoint(-1, -1, -1), Max: primitives.MakePoint(1, 1, 1)}
 	return bounds.Transform(s.transform)
 }
 
@@ -35,15 +36,15 @@ func (s *Sphere) Intersect(r primitives.Ray) Intersections {
 	if discriminant < 0 {
 		return hits
 	}
-	hits = append(hits, Intersection{Distance:((-b - math.Sqrt(discriminant)) / (2 * a)), Obj:s})
+	hits = append(hits, Intersection{Distance: ((-b - math.Sqrt(discriminant)) / (2 * a)), Obj: s})
 	if discriminant > 0 {
-		hits = append(hits, Intersection{Distance:((-b + math.Sqrt(discriminant)) / (2 * a)), Obj:s})
+		hits = append(hits, Intersection{Distance: ((-b + math.Sqrt(discriminant)) / (2 * a)), Obj: s})
 	}
 	return hits
 }
 
 // Normal Calculate the normal at a given point on the sphere
-func (s *Sphere) Normal(worldPoint primitives.PV) primitives.PV {
+func (s *Sphere) Normal(worldPoint primitives.PV, u, v float64) primitives.PV {
 	objectPoint := s.WorldToObjectPV(worldPoint)
 	objectNormal := objectPoint.Subtract(primitives.MakePoint(0, 0, 0))
 	worldNormal := s.ObjectToWorldPV(objectNormal)
@@ -55,5 +56,5 @@ func (s *Sphere) Normal(worldPoint primitives.PV) primitives.PV {
 func (s *Sphere) UVMapping(point primitives.PV) primitives.PV {
 	objectPoint := s.WorldToObjectPV(point)
 	d := primitives.MakePoint(0, 0, 0).Subtract(objectPoint)
-	return primitives.MakePoint(0.5 + math.Atan2(d.X, d.Z) / (2 * math.Pi), 0.5 - math.Asin(d.Y) / math.Pi, 0)
+	return primitives.MakePoint(0.5+math.Atan2(d.X, d.Z)/(2*math.Pi), 0.5-math.Asin(d.Y)/math.Pi, 0)
 }

@@ -1,31 +1,31 @@
 package shapes
 
 import (
-	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/patterns"
+	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 // ShapeBase Base struct to be embedded in shape objects
 type ShapeBase struct {
 	transform primitives.Matrix
-	inverse primitives.Matrix
-	material patterns.Material
-	parent Shape
+	inverse   primitives.Matrix
+	material  patterns.Material
+	parent    Shape
 }
 
 // MakeShapeBase Make a regular sphere with an identity matrix for transform
 func MakeShapeBase() ShapeBase {
-	return ShapeBase{transform:primitives.MakeIdentityMatrix(4),
-					 inverse:primitives.MakeIdentityMatrix(4),
-					 material:patterns.MakeDefaultMaterial(),
-					 parent:nil}
+	return ShapeBase{transform: primitives.MakeIdentityMatrix(4),
+		inverse:  primitives.MakeIdentityMatrix(4),
+		material: patterns.MakeDefaultMaterial(),
+		parent:   nil}
 }
 
 // SetTransform Set the transform matrix
 func (s *ShapeBase) SetTransform(m primitives.Matrix) {
 	inverse, _ := m.Inverse()
 	s.transform = m
-	s.inverse = inverse
+	s.inverse = inverse 
 }
 
 // Transform Get the transform matrix
@@ -60,7 +60,7 @@ func (s *ShapeBase) Parent() Shape {
 
 // WorldToObjectPV Convert a Point/Vector from world to object-space
 func (s *ShapeBase) WorldToObjectPV(pv primitives.PV) primitives.PV {
-	if (s.parent != nil) {
+	if s.parent != nil {
 		pv = s.parent.WorldToObjectPV(pv)
 	}
 	return pv.Transform(s.Inverse())
@@ -69,7 +69,7 @@ func (s *ShapeBase) WorldToObjectPV(pv primitives.PV) primitives.PV {
 // ObjectToWorldPV Convert a Point/Vector from object to world-space
 func (s *ShapeBase) ObjectToWorldPV(pv primitives.PV) primitives.PV {
 	result := pv.Transform(s.Inverse().Transpose())
-	if (s.parent != nil) {
+	if s.parent != nil {
 		result = s.parent.ObjectToWorldPV(result)
 	}
 	return result
@@ -78,7 +78,7 @@ func (s *ShapeBase) ObjectToWorldPV(pv primitives.PV) primitives.PV {
 // Shape Interface for different 3D and 2D shape modules
 type Shape interface {
 	Intersect(primitives.Ray) Intersections
-	Normal(primitives.PV) primitives.PV
+	Normal(primitives.PV, float64, float64) primitives.PV
 	SetTransform(primitives.Matrix)
 	Transform() primitives.Matrix
 	SetMaterial(patterns.Material)

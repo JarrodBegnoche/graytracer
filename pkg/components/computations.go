@@ -2,6 +2,7 @@ package components
 
 import (
 	"math"
+
 	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/shapes"
 )
@@ -10,8 +11,8 @@ import (
 type Computations struct {
 	shapes.Intersection
 	Point, OverPoint, UnderPoint, EyeVector, NormalVector, ReflectVector primitives.PV
-	Index1, Index2 float64
-	Inside bool
+	Index1, Index2                                                       float64
+	Inside                                                               bool
 }
 
 // Schlick Calculate an approximation of the Fresnel effect
@@ -26,22 +27,20 @@ func (c Computations) Schlick() float64 {
 		cosTheta := math.Sqrt(1.0 - sin2Theta)
 		cos = cosTheta
 	}
-	r0 := math.Pow((c.Index1 - c.Index2) / (c.Index1 + c.Index2), 2)
-	return r0 + ((1 - r0) * math.Pow(1 - cos, 5))
+	r0 := math.Pow((c.Index1-c.Index2)/(c.Index1+c.Index2), 2)
+	return r0 + ((1 - r0) * math.Pow(1-cos, 5))
 }
-
-
 
 // PrepareComputations Calculates the vectors at the point on the object
 func PrepareComputations(i shapes.Intersection, ray primitives.Ray, xs shapes.Intersections) Computations {
-	comp := Computations{Intersection:i}
+	comp := Computations{Intersection: i}
 	comp.Point = ray.Position(comp.Distance)
 	comp.EyeVector = ray.Direction.Negate()
-	comp.NormalVector = comp.Obj.Normal(comp.Point)
+	comp.NormalVector = comp.Obj.Normal(comp.Point, i.U, i.V)
 	if comp.NormalVector.DotProduct(comp.EyeVector) < 0 {
 		comp.NormalVector = comp.NormalVector.Negate()
 		comp.Inside = true
-	} else{
+	} else {
 		comp.Inside = false
 	}
 	scaledNormal := comp.NormalVector.Scalar(primitives.EPSILON)
@@ -53,10 +52,10 @@ func PrepareComputations(i shapes.Intersection, ray primitives.Ray, xs shapes.In
 		if len(stack) == 0 {
 			comp.Index1 = 1.0
 		} else {
-			comp.Index1 = stack[len(stack) - 1].Material().RefractiveIndex
+			comp.Index1 = stack[len(stack)-1].Material().RefractiveIndex
 		}
 		if index := contains(stack, inter.Obj); index >= 0 {
-			stack = append(stack[:index], stack[index + 1:]...)
+			stack = append(stack[:index], stack[index+1:]...)
 		} else {
 			stack = append(stack, inter.Obj)
 		}
@@ -64,7 +63,7 @@ func PrepareComputations(i shapes.Intersection, ray primitives.Ray, xs shapes.In
 			if len(stack) == 0 {
 				comp.Index2 = 1.0
 			} else {
-				comp.Index2 = stack[len(stack) - 1].Material().RefractiveIndex
+				comp.Index2 = stack[len(stack)-1].Material().RefractiveIndex
 			}
 			break
 		}
@@ -73,10 +72,10 @@ func PrepareComputations(i shapes.Intersection, ray primitives.Ray, xs shapes.In
 }
 
 func contains(s []shapes.Shape, e shapes.Shape) int {
-    for i, a := range s {
-        if a == e {
-            return i
-        }
-    }
-    return -1
+	for i, a := range s {
+		if a == e {
+			return i
+		}
+	}
+	return -1
 }

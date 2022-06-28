@@ -19,8 +19,14 @@ Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Bu
 - ✅ Chapter 13: [Cylinders and Cones](https://user-images.githubusercontent.com/40322086/108651820-98a51380-7490-11eb-8519-c72a496c025c.png)
 - ✅ Chapter 14: [Groups](https://user-images.githubusercontent.com/40322086/110737622-b5b14480-81fb-11eb-8b70-ff4517a84bac.png)
 - ✅ Chapter 14.5: [Bounding Boxes](https://user-images.githubusercontent.com/40322086/112742776-6e4ae800-8f5f-11eb-8a4e-66a5d145fc3f.png)
-- Chapter 15: [Triangles](https://user-images.githubusercontent.com/40322086/113527126-8be50680-958a-11eb-8521-6a738a7189c3.png)
-- Chapter 15.5: OBJ files
+- ✅ Chapter 15: [Triangles](https://user-images.githubusercontent.com/40322086/113527126-8be50680-958a-11eb-8521-6a738a7189c3.png)
+- ✅ Chapter 15.5: OBJ files
+    - [Teapot Low](https://user-images.githubusercontent.com/40322086/176288756-29e5b895-0347-4db1-9a5c-a869d2f04f4a.png)
+    - [Teapot](https://user-images.githubusercontent.com/40322086/176288784-fdfb14af-df75-4a65-a749-6ed7335a1c7f.png)
+    - [Teapot Low Smooth](https://user-images.githubusercontent.com/40322086/176288804-6b0b3cd4-062b-4e89-9655-d022c88dd911.png)
+    - [Teapot Smooth](https://user-images.githubusercontent.com/40322086/176288815-4b13b22a-3c79-4ac7-89fb-fd8bd88351fa.png)
+    - [Model 3](https://user-images.githubusercontent.com/40322086/176288834-cdb78bef-d27e-4db2-83dc-c09bedc88b3a.png)
+        - [Model 3 OBJ source](http://dmi.chez-alice.fr/)
 - Chapter 16: Constructive Solid Geometry
 
 ## Latest Render

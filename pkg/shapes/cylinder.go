@@ -2,6 +2,7 @@ package shapes
 
 import (
 	"math"
+
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
@@ -18,7 +19,7 @@ func MakeCylinder(closed bool) *Cylinder {
 
 // GetBounds Return an axis aligned bounding box for the sphere
 func (cyl *Cylinder) GetBounds() *Bounds {
-	bounds := &Bounds{Min:primitives.MakePoint(-1, 0, -1), Max:primitives.MakePoint(1, 1, 1)}
+	bounds := &Bounds{Min: primitives.MakePoint(-1, 0, -1), Max: primitives.MakePoint(1, 1, 1)}
 	return bounds.Transform(cyl.transform)
 }
 
@@ -45,14 +46,14 @@ func (cyl *Cylinder) Intersect(r primitives.Ray) Intersections {
 		// Verify hits are within height of cone
 		y0 := oray.Origin.Y + (t0 * oray.Direction.Y)
 		if (0 < y0) && (y0 < 1) {
-			hits = append(hits, Intersection{Distance:t0, Obj:cyl})
+			hits = append(hits, Intersection{Distance: t0, Obj: cyl})
 		}
 
 		y1 := oray.Origin.Y + (t1 * oray.Direction.Y)
 		if (0 < y1) && (y1 < 1) {
-			hits = append(hits, Intersection{Distance:t1, Obj:cyl})
+			hits = append(hits, Intersection{Distance: t1, Obj: cyl})
 		}
-	}	
+	}
 
 	// Cap checking only matters if cylinder is closed
 	if !cyl.closed || math.Abs(oray.Direction.Y) < 0 {
@@ -62,19 +63,19 @@ func (cyl *Cylinder) Intersect(r primitives.Ray) Intersections {
 	// Check bottom and top caps
 	t := -oray.Origin.Y / oray.Direction.Y
 	if CheckCap(oray, t) {
-		hits = append(hits, Intersection{Distance:t, Obj:cyl})
+		hits = append(hits, Intersection{Distance: t, Obj: cyl})
 	}
 
 	t = (1.0 / oray.Direction.Y) + t
 	if CheckCap(oray, t) {
-		hits = append(hits, Intersection{Distance:t, Obj:cyl})
+		hits = append(hits, Intersection{Distance: t, Obj: cyl})
 	}
 
 	return hits
 }
 
 // Normal Calculate the normal at a given point on the Cylinder
-func (cyl *Cylinder) Normal(worldPoint primitives.PV) primitives.PV {
+func (cyl *Cylinder) Normal(worldPoint primitives.PV, u, v float64) primitives.PV {
 	var objectNormal primitives.PV
 	objectPoint := cyl.WorldToObjectPV(worldPoint)
 	distance := (objectPoint.X * objectPoint.X) + (objectPoint.Z * objectPoint.Z)
@@ -84,7 +85,7 @@ func (cyl *Cylinder) Normal(worldPoint primitives.PV) primitives.PV {
 		objectNormal = primitives.MakeVector(0, -1, 0)
 	} else {
 		objectNormal = primitives.MakeVector(objectPoint.X, 0, objectPoint.Z)
-	}	
+	}
 	worldNormal := cyl.ObjectToWorldPV(objectNormal)
 	worldNormal.W = 0.0
 	return worldNormal.Normalize()
@@ -94,5 +95,5 @@ func (cyl *Cylinder) Normal(worldPoint primitives.PV) primitives.PV {
 func (cyl *Cylinder) UVMapping(point primitives.PV) primitives.PV {
 	objectPoint := cyl.WorldToObjectPV(point)
 	d := primitives.MakePoint(0, 0, 0).Subtract(objectPoint)
-	return primitives.MakePoint(0.5 + math.Atan2(d.X, d.Z) / (2 * math.Pi), objectPoint.Y, 0)
+	return primitives.MakePoint(0.5+math.Atan2(d.X, d.Z)/(2*math.Pi), objectPoint.Y, 0)
 }

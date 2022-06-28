@@ -11,7 +11,7 @@ func TestIntersectEquals(t *testing.T) {
 		dists []float64
 		equals bool
 	}{
-		{shapes.Intersections{shapes.Intersection{Distance:0.0, Obj:nil},
+		{shapes.Intersections{shapes.Intersection{Distance:0.0, Obj:nil, U:0.0,},
 							  shapes.Intersection{Distance:1.0, Obj:nil}}, []float64{0.0, 1.0}, true},
 		
     	{shapes.Intersections{shapes.Intersection{Distance:0.0, Obj:nil},
