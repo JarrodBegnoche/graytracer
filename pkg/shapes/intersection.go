@@ -3,13 +3,15 @@ package shapes
 import (
 	"math"
 	"sort"
+
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
 // Intersection Structure to hold intersection information
 type Intersection struct {
 	Distance float64
-	Obj Shape
+	Obj      Shape
+	U, V     float64
 }
 
 // Intersections Sortable list of intersection structs
@@ -18,16 +20,16 @@ type Intersections []Intersection
 // IntersectEquals Check if two slices are equal
 func IntersectEquals(xs Intersections, dists []float64) bool {
 	if len(xs) != len(dists) {
-        return false
+		return false
 	}
 	sort.Sort(xs)
 	sort.Float64s(dists)
-    for i := range xs {
-        if math.Abs(xs[i].Distance - dists[i]) > primitives.EPSILON {
-            return false
-        }
-    }
-    return true
+	for i := range xs {
+		if math.Abs(xs[i].Distance-dists[i]) > primitives.EPSILON {
+			return false
+		}
+	}
+	return true
 }
 
 // Necessary functions to make Intersections sortable

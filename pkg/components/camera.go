@@ -7,13 +7,13 @@ import (
 
 // Camera Camera object to determine the view of the render
 type Camera struct {
-	width, height uint
+	width, height uint64
 	fieldOfView, halfWidth, halfHeight, pixelSize float64
 	transform primitives.Matrix
 }
 
 // MakeCamera Create a camera object from the width, height, and field of view
-func MakeCamera(width, height uint, fieldOfView float64) *Camera {
+func MakeCamera(width, height uint64, fieldOfView float64) *Camera {
 	c := Camera{width:width, height:height, fieldOfView:fieldOfView,
 				transform:primitives.MakeIdentityMatrix(4)}
 	halfView := math.Tan(fieldOfView / 2.0)
@@ -48,7 +48,7 @@ func (c *Camera) ViewTransform(from, to, up primitives.PV) {
 }
 
 // RayForPixel Calculate the ray for the given x, y coordinates
-func (c Camera) RayForPixel(x, y uint) primitives.Ray {
+func (c Camera) RayForPixel(x, y uint64) primitives.Ray {
 	inverse, _ := c.transform.Inverse()
 	pixel := primitives.MakePoint(c.halfWidth - ((float64(x) + 0.5) * c.pixelSize),
 								  c.halfHeight - ((float64(y) + 0.5) * c.pixelSize), -1).Transform(inverse)

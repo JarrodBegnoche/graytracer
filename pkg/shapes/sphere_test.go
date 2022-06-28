@@ -3,23 +3,24 @@ package shapes_test
 import (
 	"math"
 	"testing"
+
 	"github.com/factorion/graytracer/pkg/primitives"
 	"github.com/factorion/graytracer/pkg/shapes"
 )
 
 func TestSphereGetBounds(t *testing.T) {
 	tables := []struct {
-		sphere *shapes.Sphere
+		sphere    *shapes.Sphere
 		transform primitives.Matrix
-		min, max primitives.PV
+		min, max  primitives.PV
 	}{
 		{shapes.MakeSphere(),
-		 primitives.MakeIdentityMatrix(4),
-		 primitives.MakePoint(-1, -1, -1), primitives.MakePoint(1, 1, 1)},
+			primitives.MakeIdentityMatrix(4),
+			primitives.MakePoint(-1, -1, -1), primitives.MakePoint(1, 1, 1)},
 
 		{shapes.MakeSphere(),
-		 primitives.Scaling(2, 3, 4),
-		 primitives.MakePoint(-2, -3, -4), primitives.MakePoint(2, 3, 4)},
+			primitives.Scaling(2, 3, 4),
+			primitives.MakePoint(-2, -3, -4), primitives.MakePoint(2, 3, 4)},
 	}
 	for _, table := range tables {
 		table.sphere.SetTransform(table.transform)
@@ -35,30 +36,30 @@ func TestSphereGetBounds(t *testing.T) {
 
 func TestSphereIntersection(t *testing.T) {
 	tables := []struct {
-		s *shapes.Sphere
-		r primitives.Ray
+		s         *shapes.Sphere
+		r         primitives.Ray
 		transform primitives.Matrix
-		hits []float64
+		hits      []float64
 	}{
 		{shapes.MakeSphere(),
-		 primitives.Ray{Origin:primitives.MakePoint(0, 1, -5), Direction:primitives.MakeVector(0, 0, 1)},
-		 primitives.MakeIdentityMatrix(4), []float64{5}},
+			primitives.Ray{Origin: primitives.MakePoint(0, 1, -5), Direction: primitives.MakeVector(0, 0, 1)},
+			primitives.MakeIdentityMatrix(4), []float64{5}},
 
 		{shapes.MakeSphere(),
-		 primitives.Ray{Origin:primitives.MakePoint(0, 2, -5), Direction:primitives.MakeVector(0, 0, 1)},
-		 primitives.MakeIdentityMatrix(4), []float64{}},
+			primitives.Ray{Origin: primitives.MakePoint(0, 2, -5), Direction: primitives.MakeVector(0, 0, 1)},
+			primitives.MakeIdentityMatrix(4), []float64{}},
 
 		{shapes.MakeSphere(),
-		 primitives.Ray{Origin:primitives.MakePoint(0, 0, 5), Direction:primitives.MakeVector(0, 0, 1)},
-		 primitives.MakeIdentityMatrix(4), []float64{-6, -4}},
+			primitives.Ray{Origin: primitives.MakePoint(0, 0, 5), Direction: primitives.MakeVector(0, 0, 1)},
+			primitives.MakeIdentityMatrix(4), []float64{-6, -4}},
 
 		{shapes.MakeSphere(),
-		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
-		 primitives.Scaling(2, 2, 2), []float64{3, 7}},
+			primitives.Ray{Origin: primitives.MakePoint(0, 0, -5), Direction: primitives.MakeVector(0, 0, 1)},
+			primitives.Scaling(2, 2, 2), []float64{3, 7}},
 
 		{shapes.MakeSphere(),
-		 primitives.Ray{Origin:primitives.MakePoint(0, 0, -5), Direction:primitives.MakeVector(0, 0, 1)},
-		 primitives.Translation(5, 0, 0), []float64{}},
+			primitives.Ray{Origin: primitives.MakePoint(0, 0, -5), Direction: primitives.MakeVector(0, 0, 1)},
+			primitives.Translation(5, 0, 0), []float64{}},
 	}
 	for _, table := range tables {
 		table.s.SetTransform(table.transform)
@@ -72,7 +73,7 @@ func TestSphereIntersection(t *testing.T) {
 func BenchmarkSphereIntersection(b *testing.B) {
 	sphere := shapes.MakeSphere()
 	sphere.SetTransform(primitives.Scaling(0.5, 0.5, 0.5))
-	ray := primitives.Ray{Origin:primitives.MakePoint(0, 0, -2), Direction:primitives.MakeVector(0, 0, 1)}
+	ray := primitives.Ray{Origin: primitives.MakePoint(0, 0, -2), Direction: primitives.MakeVector(0, 0, 1)}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		sphere.Intersect(ray)
@@ -81,21 +82,21 @@ func BenchmarkSphereIntersection(b *testing.B) {
 
 func TestSphereNormal(t *testing.T) {
 	tables := []struct {
-		s *shapes.Sphere
-		transform primitives.Matrix
+		s             *shapes.Sphere
+		transform     primitives.Matrix
 		point, normal primitives.PV
 	}{
 		{shapes.MakeSphere(), primitives.Translation(0, 1, 0),
-		 primitives.MakePoint(0, 1.7071067811865476, -0.7071067811865476),
-		 primitives.MakeVector(0, 0.7071067811865476, -0.7071067811865476)},
+			primitives.MakePoint(0, 1.7071067811865476, -0.7071067811865476),
+			primitives.MakeVector(0, 0.7071067811865476, -0.7071067811865476)},
 
 		{shapes.MakeSphere(), primitives.Scaling(1.0, 0.5, 1.0).Multiply(primitives.RotationZ(math.Pi / 5.0)),
-		 primitives.MakePoint(0, 0.7071067811865476, -0.7071067811865476),
-		 primitives.MakeVector(0, 0.9701425001453319, -0.24253562503633294)},
+			primitives.MakePoint(0, 0.7071067811865476, -0.7071067811865476),
+			primitives.MakeVector(0, 0.9701425001453319, -0.24253562503633294)},
 	}
 	for _, table := range tables {
 		table.s.SetTransform(table.transform)
-		normal := table.s.Normal(table.point)
+		normal := table.s.Normal(table.point, 0.0, 0.0)
 		if !normal.Equals(table.normal) {
 			t.Errorf("Expected %v, got %v", table.normal, normal)
 		}
@@ -108,6 +109,6 @@ func BenchmarkSphereNormal(b *testing.B) {
 	point := primitives.MakePoint(0, 0, 0.5)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		sphere.Normal(point)
+		sphere.Normal(point, 0.0, 0.0)
 	}
 }

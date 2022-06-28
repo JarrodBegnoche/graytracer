@@ -7,7 +7,7 @@ import (
 
 func TestMakeCamera(t *testing.T) {
 	tables := []struct {
-		width, height uint
+		width, height uint64
 		fieldOfView, pixelSize float64
 	}{
 		{200, 125, 1.5707963267948966, 0.01},
@@ -55,7 +55,7 @@ func TestViewTransform(t *testing.T) {
 
 func TestRayForPixel(t *testing.T) {
 	tables := []struct {
-		x, y uint
+		x, y uint64
 		c *Camera
 		transform primitives.Matrix
 		ray primitives.Ray

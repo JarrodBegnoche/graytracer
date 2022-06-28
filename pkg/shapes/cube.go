@@ -2,6 +2,7 @@ package shapes
 
 import (
 	"math"
+
 	"github.com/factorion/graytracer/pkg/primitives"
 )
 
@@ -28,7 +29,7 @@ func MakeCube() *Cube {
 
 // GetBounds Return an axis aligned bounding box for the sphere
 func (c *Cube) GetBounds() *Bounds {
-	bounds := Bounds{Min:primitives.MakePoint(-1, -1, -1), Max:primitives.MakePoint(1, 1, 1)}
+	bounds := Bounds{Min: primitives.MakePoint(-1, -1, -1), Max: primitives.MakePoint(1, 1, 1)}
 	return bounds.Transform(c.transform)
 }
 
@@ -44,11 +45,11 @@ func (c *Cube) Intersect(r primitives.Ray) Intersections {
 	if tmin > tmax {
 		return Intersections{}
 	}
-	return Intersections{Intersection{Distance:tmin, Obj:c}, Intersection{Distance:tmax, Obj:c}}
+	return Intersections{Intersection{Distance: tmin, Obj: c}, Intersection{Distance: tmax, Obj: c}}
 }
 
 // Normal Calculate the normal at a given point on the cube
-func (c *Cube) Normal(worldPoint primitives.PV) primitives.PV {
+func (c *Cube) Normal(worldPoint primitives.PV, u, v float64) primitives.PV {
 	objectPoint := c.WorldToObjectPV(worldPoint)
 	absx := math.Abs(objectPoint.X)
 	absy := math.Abs(objectPoint.Y)

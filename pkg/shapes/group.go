@@ -26,8 +26,8 @@ func (g *Group) AddShape(shape Shape) {
 	g.shapes = append(g.shapes, shape)
 	shape.SetParent(g)
 	bounds := shape.GetBounds()
-	if (bounds != nil) {
-		if (g.bounds == nil) {
+	if bounds != nil {
+		if g.bounds == nil {
 			g.bounds = bounds.Transform(g.transform)
 		} else {
 			g.bounds.AddBounds(bounds.Transform(g.transform))
@@ -38,7 +38,7 @@ func (g *Group) AddShape(shape Shape) {
 // Intersect Check if a ray intersects
 func (g *Group) Intersect(r primitives.Ray) Intersections {
 	hits := Intersections{}
-	if ((g.bounds == nil) || (g.bounds.Intersect(r))) {
+	if (g.bounds == nil) || (g.bounds.Intersect(r)) {
 		// convert ray to object space
 		oray := r.Transform(g.inverse)
 		for _, shape := range g.shapes {
@@ -49,7 +49,7 @@ func (g *Group) Intersect(r primitives.Ray) Intersections {
 }
 
 // Normal Calculate the normal at a given point on the sphere
-func (g *Group) Normal(worldPoint primitives.PV) primitives.PV {
+func (g *Group) Normal(worldPoint primitives.PV, u, v float64) primitives.PV {
 	// Only exists for Interface, should never be called
 	return primitives.MakeVector(0, 1, 0)
 }
