@@ -27,7 +27,8 @@ Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Bu
     - [Teapot Smooth](https://user-images.githubusercontent.com/40322086/176288815-4b13b22a-3c79-4ac7-89fb-fd8bd88351fa.png)
     - [Model 3](https://user-images.githubusercontent.com/40322086/176288834-cdb78bef-d27e-4db2-83dc-c09bedc88b3a.png)
         - [Model 3 OBJ source](http://dmi.chez-alice.fr/)
-- Chapter 16: Constructive Solid Geometry
+        - 737,161 Triangles
+- ✅ Chapter 16: [Constructive Solid Geometry](https://user-images.githubusercontent.com/40322086/176577897-7eda8539-804b-4378-a0dc-ef09b2518232.png)
 
 ## Latest Render
 
@@ -38,44 +39,44 @@ Raytracer written in Go, based on the book [The Ray Tracer Challenge by Jamis Bu
 ### Benchmarks of primitives calculation
 
 pkg: github.com/factorion/graytracer/pkg/primitives
-cpu: AMD Ryzen 7 2700 Eight-Core Processor
+cpu: AMD Ryzen 7 5800H with Radeon Graphics
 | Function | Iterations | Speed | Memory | Allocations |
-| -------- | ---------: | ----: | -----: | ----------: |      
-| BenchmarkSubmatrix4x4-16 | 5329711 | 223.5 ns/op | 152 B/op | 4 allocs/op |
-| BenchmarkMatrixMultiply-16 | 3388286 | 357.6 ns/op | 224 B/op | 5 allocs/op |
-| BenchmarkMatrixDeterminant4x4-16 | 387013 | 3099 ns/op | 1568 B/op | 52 allocs/op |
-| BenchmarkMatrixMinor3x3-16 | 7517265 | 160.8 ns/op | 80 B/op | 3 allocs/op |
-| BenchmarkMatrixCofactor3x3-16 | 7162288 | 168.5 ns/op | 80 B/op | 3 allocs/op |
-| BenchmarkMatrixInverse4x4-16 | 74745 | 16077 ns/op | 8064 B/op | 265 allocs/op |
-| BenchmarkPVTransform-16 | 131638082 | 9.265 ns/op | 0 B/op | 0 allocs/op |
-| BenchmarkPVReflect-16 | 178992032 | 6.959 ns/op | 0 B/op | 0 allocs/op |
-| BenchmarkRayTransform-16 | 37492969 | 32.03 ns/op | 0 B/op | 0 allocs/op |
+| -------- | ---------: | ----: | -----: | ----------: |
+| BenchmarkSubmatrix4x4-16 | 10416955 | 114.4 ns/op | 152 B/op | 4 allocs/op |
+| BenchmarkMatrixMultiply-16 | 6347768 | 189.2 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkMatrixDeterminant4x4-16 | 799813 | 1514 ns/op | 1568 B/op | 52 allocs/op |
+| BenchmarkMatrixMinor3x3-16 | 14114458 | 83.44 ns/op | 80 B/op | 3 allocs/op |
+| BenchmarkMatrixCofactor3x3-16 | 14621076 | 81.79 ns/op | 80 B/op | 3 allocs/op |
+| BenchmarkMatrixInverse4x4-16 | 151344 | 7859 ns/op | 8064 B/op | 265 allocs/op |
+| BenchmarkPVTransform-16 | 255785548 | 4.582 ns/op | 0 B/op | 0 allocs/op |
+| BenchmarkPVReflect-16 | 707641048 | 1.715 ns/op | 0 B/op | 0 allocs/op |
+| BenchmarkRayTransform-16 | 88858610 | 13.39 ns/op | 0 B/op | 0 allocs/op |
 
 ### Benchmarks of basic shape calculations
 
 pkg: github.com/factorion/graytracer/pkg/shapes
-cpu: AMD Ryzen 7 2700 Eight-Core Processor
+cpu: AMD Ryzen 7 5800H with Radeon Graphics
 | Function | Iterations | Speed | Memory | Allocations |
 | -------- | ---------: | ----: | -----: | ----------: |
-| BenchmarkConeIntersection-16 | 5701870 | 207.7 ns/op | 72 B/op | 2 allocs/op |
-| BenchmarkConeNormal-16 | 3989524 | 305.8 ns/op | 224 B/op | 5 allocs/op |
-| BenchmarkCubeIntersection-16 | 9322422 | 130.6 ns/op | 48 B/op | 1 allocs/op |
-| BenchmarkCubeNormal-16 | 3650877 | 319.7 ns/op | 224 B/op | 5 allocs/op |
-| BenchmarkCylinderIntersection-16 | 5483966 | 214.8 ns/op | 72 B/op | 2 allocs/op |
-| BenchmarkCylinderNormal-16 | 3969734 | 301.9 ns/op | 224 B/op | 5 allocs/op |
-| BenchmarkPlaneIntersection-16 | 10618462 | 112.5 ns/op | 24 B/op | 1 allocs/op |
-| BenchmarkPlaneNormal-16 | 4438746 | 273.1 ns/op | 224 B/op | 5 allocs/op |
-| BenchmarkSphereIntersection-16 | 6149660 | 200.8 ns/op | 72 B/op | 2 allocs/op |
-| BenchmarkSphereNormal-16 | 3968947 | 300.2 ns/op | 224 B/op | 5 allocs/op |
-| BenchmarkTriangleIntersection-16 | 11317957 | 107.5 ns/op | 24 B/op | 1 allocs/op |
-| BenchmarkTriangleNormal-16 | 4596672 | 266.7 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkConeIntersection-16 | 9989410 | 121.4 ns/op | 128 B/op | 2 allocs/op |
+| BenchmarkConeNormal-16 | 7841389 | 155.3 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkCubeIntersection-16 | 15381164 | 70.61 ns/op | 80 B/op | 1 allocs/op |
+| BenchmarkCubeNormal-16 | 7521614 | 156.3 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkCylinderIntersection-16 | 9446713 | 124.3 ns/op | 128 B/op | 2 allocs/op |
+| BenchmarkCylinderNormal-16 | 7790467 | 151.1 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkPlaneIntersection-16 | 19712168 | 60.18 ns/op | 48 B/op | 1 allocs/op |
+| BenchmarkPlaneNormal-16 | 8302458 | 148.8 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkSphereIntersection-16 | 9833896 | 120.2 ns/op | 128 B/op | 2 allocs/op |
+| BenchmarkSphereNormal-16 | 7740237 | 150.4 ns/op | 224 B/op | 5 allocs/op |
+| BenchmarkTriangleIntersection-16 | 16434596 | 71.02 ns/op | 48 B/op | 1 allocs/op |
+| BenchmarkTriangleNormal-16 | 8217364 | 143.5 ns/op | 224 B/op | 5 allocs/op |
 
 ### Benchmarks of different bounding box setups with 4096 spheres
 
 pkg: github.com/factorion/graytracer/pkg/components
-cpu: AMD Ryzen 7 2700 Eight-Core Processor
+cpu: AMD Ryzen 7 5800H with Radeon Graphics
 | Function | Iterations | Speed | Memory | Allocations |
 | -------- | ---------: | ----: | -----: | ----------: |
-| BenchmarkNoBoundingBoxes-16 | 1711 | 614977 ns/op | 5960 B/op | 113 allocs/op |
-| Benchmark8BoundingBoxes-16 | 10000 | 117799 ns/op | 7336 B/op | 124 allocs/op |
-| Benchmark64BoundingBoxes-16 | 32006 | 37650 ns/op | 7432 B/op | 129 allocs/op |
+| BenchmarkNoBoundingBoxes-16 | 4136 | 291257 ns/op | 7936 B/op | 113 allocs/op |
+| Benchmark8BoundingBoxes-16 | 18379 | 64370 ns/op | 10080 B/op | 124 allocs/op |
+| Benchmark64BoundingBoxes-16 | 60115 | 20114 ns/op | 10240 B/op | 129 allocs/op |
