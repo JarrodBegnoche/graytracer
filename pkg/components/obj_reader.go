@@ -47,6 +47,7 @@ func ParseObjFile(filename string, smooth bool, mats map[string]patterns.Materia
 	name := Default_name
 	mat_groups := make(map[string]uint64)
 	material := mats[Default_name]
+	total_triangles := int64(0)
 	result := &parsed_obj{
 		Vertices: make([]primitives.PV, 0),
 		Normals:  make([]primitives.PV, 0),
@@ -115,6 +116,7 @@ func ParseObjFile(filename string, smooth bool, mats map[string]patterns.Materia
 				}
 				triangle.SetMaterial(material)
 				result.Faces[name] = append(result.Faces[name], triangle)
+				total_triangles++
 				field2 = field3
 			}
 		case "g":

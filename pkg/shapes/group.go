@@ -16,7 +16,7 @@ func MakeGroup() *Group {
 	return &Group{MakeShapeBase(), []Shape{}, nil}
 }
 
-// GetBounds Return an axis aligned bounding box for the sphere
+// GetBounds Return an axis aligned bounding box for the group of shapes
 func (g *Group) GetBounds() *Bounds {
 	return g.bounds
 }
